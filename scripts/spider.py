@@ -2,8 +2,10 @@
 import requests, random, time, os, sys, datetime, decimal, traceback
 from pyquery import PyQuery as pq
 
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.packages.urllib3.exceptions import InsecureRequestWarning, SNIMissingWarning, InsecurePlatformWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(SNIMissingWarning)
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
 # 引入父目录来引入其他模块
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
