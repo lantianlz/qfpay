@@ -2,6 +2,9 @@
 import requests, random, time, os, sys, datetime, decimal, traceback
 from pyquery import PyQuery as pq
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 # 引入父目录来引入其他模块
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../')),
@@ -45,7 +48,7 @@ class Spider(object):
         登陆
         '''
         print u"访问登陆界面..."
-        self.session.get(url=self.LOGIG_URL, headers={"User-Agent": self.USER_AGENT})
+        self.session.get(url=self.LOGIG_URL, headers={"User-Agent": self.USER_AGENT}, verify=False)
         time.sleep(self.SLEEP_TIME)
 
         print u"访问生成验证码链接..."
