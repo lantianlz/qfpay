@@ -1,0 +1,155 @@
+body{
+    background-color: #fbfaff;
+}
+.list-group{
+    border: 1px solid #ebebeb;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 82px;
+    background-color: #fff;
+}
+.list-group-item{
+    /*box-shadow: #ffe5cf 0px 0px 11px;*/
+    border: 0;
+    border-top: 1px solid #ebebeb;
+    margin-bottom: 0;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+.list-group-item:last-child{
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+.list-group-item:first-child{
+    border-top: 0;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+.avatar{
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+.bg-curtain{
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    position: absolute;
+    left: -112px;
+    top: -18px;
+}
+.service{
+    padding-left: 70px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    position: absolute;
+    left: -2%;
+    width: 104%;
+    top: -1px;
+    background-color: #ffffff;
+    overflow: hidden;
+    box-shadow: 0px 5px 18px 1px #e1e1e1;
+    border-radius: 2px;
+}
+.tag{
+    border-radius: 15px;
+    padding: 3px 7px 2px 7px;
+    color: #f07925;
+    border: 1px solid #f07925;
+    font-size: 12px;
+    margin-right: 3px;
+    display: inline-block;
+    /*-webkit-transform: scale(0.8);*/
+            /*transform: scale(0.8);*/
+}
+.rectangle-1{
+    margin-top: 40%;
+    box-shadow: 0px 0px 25px #e5e5e5;
+    height: 80px;
+    position: relative;
+    z-index: 2;
+    background-color: #fff;
+    border-radius: 2px;
+}
+.rectangle-2{
+    box-shadow: 0px 0px 25px #e5e5e5;
+    background-color: #fff;
+    height: 35px;
+    position: relative;
+    z-index: 1;
+    top: 10px;
+    width: 90%;
+    left: 5%;
+    top: 98%;
+    border-radius: 2px;
+}
+.rectangle-3{
+    height: 18px;
+    background-color: #e2e2e2;
+}
+.rectangle-4{
+    height: 10px;
+    width: 40px;
+    background-color: #e2e2e2;
+    margin-right: 5px;
+    float: left;
+}
+.circle-1{
+    position: absolute;
+    left: 20px;
+    top: 17px;
+    background-color: #e2e2e2;
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.btn-booking{
+    border-radius: 22px;
+    background-color: #f07925;
+    color: #fff;
+    border-color: #f07925;
+    box-shadow: #FFAE73 0px 3px 10px;
+    outline: 0;
+    padding: 8px 55px;
+    position: relative;
+}
+.btn-booking:focus, 
+.btn-booking:hover{
+    outline: 0;
+    background-color: #d4681b;
+    border-color: #d4681b;
+    color: #fff;
+}
+.person{
+    width: 32px;
+    position: absolute;
+    left: 15px;
+    top: -34px;
+}
+.txt{
+    position: absolute;
+    left: 53px;
+    top: -24px;
+    font-size: 13px;
+    color: #222;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

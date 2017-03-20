@@ -1,0 +1,78 @@
+.curtain-container{
+    width: 100%;
+    height: 145px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+}
+.curtain{
+    position: absolute;
+    left: -50%;
+    bottom: 0;
+    width: 200%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    overflow: hidden;
+    background-color: #ddd
+}
+.curtain-img{
+    width: 50%;
+    left: 25%;
+    margin-bottom: -20%;
+    position: relative;
+    z-index: 1;
+}
+.curtain-cover{
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+    z-index: 2;
+    height: 500px;
+    background-color: #341600;
+    opacity: 0.6;
+}
+
+.avatar{
+    width: 88px;
+    height: 88px;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 4px;
+    display: inline-block;
+}
+.avatar-img{
+    width: 100%;
+    border-radius: 50%;
+}
+.list-group-item:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.list-group-item:last-child {
+    margin-bottom: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border: 0;
+}
+.list-group-item{
+    border: 0;
+    margin-bottom: 0;
+    border-bottom: #eee 1px solid;
+}
+.nav-bottom{
+    box-shadow: 1px -1px 5px #f1f1f1;
+}
+.new-msg{
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    right: -20px;
+    top: -10px;
+    background-color: red;
+    border-radius: 50%;
+}
+.profile-icon{
+    width: 15px;
+    margin-top: -4px;
+}

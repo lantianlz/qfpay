@@ -1,0 +1,137 @@
+{% extends "mobile/base_home.html" %}
+{% load custom_filters %}
+{% block title %}即刻服务{% endblock title %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/index.css?v={{MEDIA_VERSION}}">
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        var DATA = {{data_json|safe}},
+
+            CHILD_CATEGORY_HTML = [
+                '<div class="modal" id="child-category-modal" style="perspective: 500px; -webkit-perspective: 500px;">',
+                    '<div class="modal-dialog">',
+                        '<div class="modal-content">',
+                            '<div class="modal-body">',
+                                '<div class="child-category row">',
+                                    '{0}',
+                                '</div>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                    '<span class="close-modal close animated fadeInUp" data-dismiss="modal"><i class="fa fa-close"></i></span>',
+                '</div>'
+            ].join('');
+
+        // 分类点击事件
+        $('.category').on('click', function(){
+            var index = parseInt($(this).data('index')) - 1,
+                data = DATA[index][4],
+                childCategoryStr = "";
+
+            $.map(data, function(per, i){
+                childCategoryStr += [
+                    '<a href="'+per.url+'">',
+                        '<div class="child-category-item col-xs-6 animated fadeInDown '+(per.is_open?"":"child-unopen")+' '+(per.is_new?"child-new":"")+'">',
+                            '<div class="col-xs-10 col-xs-offset-2 pr-0 pl-0">',
+                                '<span class="vl"></span>',
+                                '<span class="pr inline-block">' + per.name,
+                                    '<span class="child-new-flag">(NEW!)</span>',
+                                    '<span class="child-unopen-flag">(COMING SOON...)</span>',
+                                '</span>',
+                            '</div>',
+                        '</div>',
+                    '</a>'
+                ].join('');
+            });
+
+            // 添加二级分类
+            $('body').append(String.format(CHILD_CATEGORY_HTML, childCategoryStr));
+            $('#child-category-modal').modal('show');
+            $('#child-category-modal').on('hide.bs.modal', function (e) {
+                $(this).remove();
+                $('.clone-category').remove();
+            });
+
+            var cloneObj = $(this).clone(),
+                offset = $(this).offset();
+
+            cloneObj.children().removeClass('animated fadeInRight fadeInLeft');
+            cloneObj.addClass('clone-category');
+            cloneObj.css({'left': offset.left, 'top': offset.top-10});
+            $('#child-category-modal').append(cloneObj);
+            window.setTimeout(function(){
+                cloneObj.css({
+                    'top': 94, 
+                    '-webkit-transform': 'rotateX(360deg)',
+                    '        transform': 'rotateX(360deg)'
+                });
+            }, 10);
+        });
+
+        // 控制选择城市
+        $('.change-location').on('click', function(){
+            $('.cities').toggleClass('active');
+        });
+        
+    })
+</script>
+{% endblock %}
+{% block back %}{% endblock %}
+{% block container %}
+<div class="row ml-0 mr-0" style="overflow-x: hidden;">
+    <div class="col-xs-12 pr over-flow-hide pt-50">
+        <div class="bg-curtain"></div>
+        <div class="location">
+            <span class="change-location">
+                <i class="fa fa-map-marker f16"></i>
+                <span class="f12 pl-3">成都</span>
+                <i class="fa fa-caret-down pl-3"></i>
+            </span>
+            <div class="cities">
+                <span class="city">
+                    <span class="active">成都</span>
+                </span>
+                <span class="city">
+                    <span>北京</span>
+                </span>
+                <span class="city">
+                    <span>上海</span>
+                </span>
+                <span class="city">
+                    <span>广州</span>
+                </span>
+                <span class="city">
+                    <span>深圳</span>
+                </span>
+            </div>
+        </div>
+        <div class="col-xs-12 pb-3 pl-10 pr-10 animated flipInX">
+            <div class="col-xs-12 slogan">
+                <img class="logo" src="{{MEDIA_URL}}img/logo.png">
+                <span class="f13">一站搞定行政事务，尽在联谊会</span>
+            </div>
+        </div>
+    </div>
+
+    {% for category in data %}
+    <div class="col-xs-12 pt-10 pl-20 pr-20 category" data-index="{{forloop.counter}}">
+        <div class="col-xs-12 br-3 category-{{category.0}} animated {% cycle 'fadeInLeft' 'fadeInRight' %} over-flow-hide">
+            {% if category.3 %}
+            <img class="new" src="{{MEDIA_URL}}img/home/new.png">
+            {% endif %}
+            <div class="col-xs-3 pt-15 pb-15 pl-5">
+                <img class="img-category-{{category.0}}" src="{{MEDIA_URL}}img/home/category-{{category.0}}.png">
+            </div>
+            <div class="col-xs-9 co-ffffff text-right pl-0 pr-5 pt-15">
+                <div class="f16">{{category.1}}</div>
+                <div class="f12 pt-2">{{category.2}}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

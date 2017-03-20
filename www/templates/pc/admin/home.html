@@ -1,0 +1,103 @@
+{% extends "pc/base/base_admin.html" %}
+
+{% block base_css %}
+<style type="text/css">
+@media (min-width: 768px){
+    .container {
+        width: 980px;
+    }
+}
+@media (min-width: 1200px){
+    .container {
+        width: 1170px;
+    }
+}
+
+.form-control{
+    border-radius: 1px;
+}
+.input-group-sm>.form-control, 
+.input-group-sm>.input-group-addon, 
+.input-group-sm>.input-group-btn>.btn{
+    border-radius: 1px;
+}
+
+.navbar-collapse{
+    background-color: #21242b;
+}
+
+.navbar-default .navbar-nav>li>a {
+    transition: all 0.3s;
+    color: #c1c1c1;
+    border-right: 1px solid #3e3e3e;
+    font-size: 12px;
+    padding-top: 23px;
+    padding-bottom: 23px;
+    padding-left: 45px;
+    padding-right: 45px;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+    color: #ffffff;
+    background-color: #4091fc;
+}
+
+.navbar-default .navbar-nav>.active>a, 
+.navbar-default .navbar-nav>.active>a:hover, 
+.navbar-default .navbar-nav>.active>a:focus{
+    color: #ffffff;
+    background-color: #4091fc;
+}
+
+.user-info{
+    position: absolute;
+    top: 11px;
+    right: 45px;
+    color: #c1c1c1;
+}
+</style>
+{% block css %}{% endblock %}
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+});
+</script>
+{% block javascript %}{% endblock %}
+{% endblock %}
+
+{% block base_container %}
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid pr-0 pl-0">
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li {% if '/admin/shop' in request.path %} class="active" {% endif %}>
+                    <a href="/admin/shop"><i class="fa fa-shopping-cart pr-10 f16"></i>商户统计</a>
+                </li>
+                <li {% if 'salesman' in request.path %} class="active" {% endif %}>
+                    <a href="/admin/salesman"><i class="fa fa-user pr-10 f16"></i>业务员统计</a>
+                </li>
+                <li {% if 'inactive_shops' in request.path %} class="active" {% endif %}>
+                    <a href="/admin/inactive_shops"><i class="fa fa-line-chart pr-10 f16"></i>流失风险统计</a>
+                </li>
+            </ul>
+            <div class="user-info">
+                <div>
+                    {{ request.user.nick }}，<a href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
+                </div>
+                <div class="pt-2">
+                    渠道商：
+                    <a href="/admin/choose_channel" title="选择渠道">
+                        {{ request.session.CHANNEL_NAME }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    {% block admin_main %}{% endblock %}
+</div>
+{% endblock %}

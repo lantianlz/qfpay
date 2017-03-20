@@ -1,0 +1,33 @@
+{% extends "pc/base/base_admin.html" %}
+
+{% block title %}渠道选择{% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+.ul-channel .col-md-3{
+    width: 25%;
+    padding-top: 30px;
+}
+.channel{
+    background-color: #eee;
+}
+</style>
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 pt-50 pl-25 f22 text-center">选择渠道商</div>
+        <ul class="list-inline col-md-12 ul-channel pt-15">
+            {% for channel in channels %}
+            <a href="/admin/choose_channel?channel={{ channel.CHANNEL_ID }}" class="col-md-3">
+                <div class="col-md-12 channel">
+                    <div class="col-md-12 pt-15">渠道商：</div>
+                    <div class="col-md-12 pt-15 pb-15 fb f18">{{ channel.USERNAME }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

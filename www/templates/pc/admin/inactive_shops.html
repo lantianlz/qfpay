@@ -1,0 +1,33 @@
+{% extends "pc/admin/home.html" %}
+{% block title %}流失风险统计{% endblock title %}
+
+{% block admin_main %}
+<div class="row pt-70">
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>商户名称</th>
+                    <th>联系人</th>
+                    <th>联系电话</th>
+                    <th>最后交易日期</th>
+                    <th>所属业务员</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shop in shops %}
+                <tr {% if shop.is_inactive %}class="co-c23531 fb fi"{% endif %}>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a class="{% if shop.is_inactive %}co-c23531{% endif %}" target="_blank" href="/admin/per_shop/{{ shop.shop_id }}">{{ shop.name }}</a></td>
+                    <td>{{ shop.contact }}</td>
+                    <td>{{ shop.tel }}</td>
+                    <td>{{ shop.latest_order_date }}</td>
+                    <td>{{ shop.owner }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

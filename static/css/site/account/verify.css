@@ -1,0 +1,90 @@
+.avatar{
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 4px;
+    display: inline-block;
+}
+.avatar-img{
+    width: 100%;
+    border-radius: 50%;
+}
+.camera-bg{
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    background-color: #f07925;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+}
+.fa-camera{
+    font-size: 12px;
+    color: #ffffff;
+    padding-top: 5px;
+}
+.list-group-item{
+    border: 0;
+    margin-bottom: 0;
+}
+.text-input{
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px #e1e1e1 solid;
+    transition: all 0.3s;
+    font-size: 16px;
+    background-color: transparent;
+    z-index: 2;
+}
+.text-input:focus{
+    outline: 0;
+    border-bottom: 1px #f07925 solid;
+}
+.lable-text{
+    -webkit-transform: translateY(30px);
+            transform: translateY(30px);
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+    z-index: 1;
+}
+.lable-text.focus{
+    -webkit-transform: translateY(0px);
+            transform: translateY(0px);
+}
+.btn-verify{
+    border-radius: 20px;
+    background-color: #f07925;
+    color: #fff;
+    border-color: #f07925;
+    box-shadow: #FFAE73 0px 3px 10px;
+    outline: 0;
+}
+.btn-verify:focus,
+.btn-verify:hover{
+    outline: 0;
+    background-color: #d4681b;
+    border-color: #d4681b;
+    color: #fff;
+}
+.btn-modify{
+    border-radius: 20px;
+    background-color: #ffffff;
+    border-color: #ffffff;
+    box-shadow: #ffd5b8 0 2px 4px;
+}
+.fa-check-square{
+    color: #20ba48;
+}
+.profile-icon{
+    width: 15px;
+    position: absolute;
+    left: -12px;
+    top: 40px;
+}

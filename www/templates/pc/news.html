@@ -1,0 +1,85 @@
+{% extends "pc/base/base_home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+
+{% block title %}新闻资讯{% endblock %}
+{% block css %}
+<style type="text/css">
+body{
+    background-color: #eeeeee;
+}
+.short-line{
+    width: 100px;
+    background-color: #b86f71;
+    height: 3px;
+    display: inline-block;
+}
+.point{
+    width: 5px;
+    height: 5px;
+    background-color: #b86f71;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 2px;
+}
+a.list-group-item{
+    color: #959595;
+}
+.list-group-item{
+    margin: 0;
+    border: 0;
+    padding-bottom: 12px;
+    padding-top: 12px;
+    border-bottom: 1px solid #ddd;
+}
+.list-group-item:last-child {
+    margin-bottom: 0;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.paging a{
+    color: #959595;
+    padding-left: 5px;
+}
+</style>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="row pb-20 bgc-ffffff">
+        <div class="col-md-12 col-xs-12 text-center co-959595 pt-40 f18 letter-spacing-1 bgc-ffffff">
+            新闻资讯
+        </div>
+        <div class="col-md-12 col-xs-12 text-center co-959595 pt-5 f16 bgc-ffffff">
+            News  Information
+        </div>
+        <div class="col-md-12 col-xs-12 text-center pt-10 bgc-ffffff pb-20 pl-0 pr-0">
+            <span class="short-line"></span>
+            <div class="col-md-12 col-xs-12 text-center border-bottom-1 bdc-959595"></div>
+        </div>
+
+        <div class="col-md-12 col-xs-12">
+            <ul class="col-md-6 col-xs-6 col-md-offset-3 col-xs-offset-3 list-group f12 co-959595 pt-30">
+                {% for new in news %}
+                <a class="col-md-12 col-xs-12 list-group-item pl-0 pr-0" href="/news_detail/{{new.id}}">
+                    <div class="col-md-3 col-xs-3 pl-0 pr-0">
+                        <span class="point"></span>{{new.date}}
+                    </div>
+                    <div class="col-md-8 col-xs-8 pl-0 pr-0">
+                        {{new.title}}
+                    </div>
+                    <div class="col-md-1 col-xs-1 pl-0 pr-0 text-right">
+                        >>>
+                    </div>
+                </a>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-md-12 col-xs-12 text-center f12 co-959595 paging pb-20 pt-10">
+            {{page_params|paging:request}}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

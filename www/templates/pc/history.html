@@ -1,0 +1,182 @@
+{% extends "pc/base/base_home.html" %}
+
+{% block title %}历史回眸{% endblock %}
+{% block css %}
+<style type="text/css">
+body{
+    background-color: #eeeeee;
+}
+.short-line-1{
+    width: 40px;
+    background-color: #b86f71;
+    height: 1px;
+    display: inline-block;
+}
+.history-1{
+    width: 125px;
+    position: absolute;
+    left: -190px;
+    top: 0px;
+}
+.history-2{
+    width: 125px;
+    position: absolute;
+    left: -190px;
+    top: 48px;
+}
+
+.circle{
+    position: absolute;
+    left: -32px;
+    top: 50px;
+}
+.circle-1{
+    position: absolute;
+    left: -33px;
+    top: 0;
+}
+.more{
+    background-color: #b86f71;
+    font-size: 12px;
+    color: #eee;
+    float: right;
+    padding: 0px 5px;
+    border-radius: 7px;
+}
+.text-1{
+    position: absolute;
+    left: -202px;
+    top: 175px;
+    width: 145px;
+    text-align: center;
+    font-size: 12px;
+}
+.text-2{
+    position: absolute;
+    left: -191px;
+    top: 222px;
+    width: 120px;
+    text-align: center;
+    font-size: 12px;
+}
+.text-3{
+    position: absolute;
+    left: -191px;
+    top: 105px;
+    width: 120px;
+    text-align: center;
+    font-size: 12px;
+}
+</style>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="row pb-40 pb-0 bgc-ffffff">
+        <div class="col-md-12 col-xs-12 pb-20 pl-0 pr-0">
+            <img class="w100p" src="{{MEDIA_URL}}img/history/history.jpg">
+        </div>
+        <div class="col-md-12 col-xs-12 pt-40 pb-0">
+            <div class="col-md-4 col-xs-4"></div>
+            <div class="col-md-7 col-xs-7 border-left-2 bdc-959595 pl-25">
+
+                <!-- <div class="col-md-12 col-xs-12 co-b86f71 pr">
+                    平山第一党支部
+                    <img class="circle-1" src="{{MEDIA_URL}}img/history/circle-1.jpg">
+                    <a href="/s/dzb" class="more">更多</a>
+                </div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-40 f12 letter-spacing-1 line-height-20 co-959595">1930年10月，栗再温、范永祥、王敬通在平山县土岸村成立了平山县第一个党小组，栗再温任组长。同年12月，在党小组的基础上成立平山县第一个党支部——中国共产党土岸党支部。范永祥任支部书记；王敬通任组织委员，负责组织建设和武装工作。</div> -->
+                <div class="col-md-12 col-xs-12f12 co-959595 pr">
+                    <img class="history-1" src="{{MEDIA_URL}}img/history/history-1.png">
+                    <img class="circle-1" src="{{MEDIA_URL}}img/history/circle-1.jpg">
+                    <span class="text-1">平山县第一个党支部纪念碑</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71">平山第一个党支部<a href="/s/dzb" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">1930年10月,栗再温、范永祥、王敬通在平山县土岸成立了平山县第一个党小组，栗再温任组长。同年12月，在党小组的基础上成立平山县第一个党支部——中国共产党土岸党支部。范永祥任支部书记；王敬通任组织委员，负责组织建设和武装工作。</div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    <img class="history-2" src="{{MEDIA_URL}}img/history/history-3.png">
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-2">栗再温</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">栗再温<a href="/s/lzw" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">原名栗志周或李玉亭、老康，直隶（今河北省）平山县杜家庄南沟人，出身农民家庭，自幼读书，1924年考入北平大同中学。1925年“五卅”惨案后，参加了李大钊领导的三次示威游行。1927年加入中国共产党。抗战时期，他为冀西中共地方党的建设、农民武装斗争的开展和抗日根据地创建做出了突出贡献。新中国成立后， 栗再温同志曾任中华全国总工会书记处书记、山东省副省长。
+                </div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    <!-- <img class="history-4" src="{{MEDIA_URL}}img/history/history-4.png"> -->
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-3">未留下早年参加革命 的影像资料</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">范永祥<a href="/s/fyx" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">范永祥（1903-1947），原名范黑黑，革命烈士，河北省平山县孟家庄镇土岸村人，家境贫寒，父母早逝，自幼上过两年私塾，1926年与王敬通一起到湖北黄安参加农民自卫军。
+                </div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    <!-- <img class="history-4" src="{{MEDIA_URL}}img/history/history-4.png"> -->
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-3">未留下早年参加革命 的影像资料</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">王敬通<a href="/s/wjt" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">王敬通（1904～1966），原名王元元，1904 年生于平山县孟家庄镇北坪村的一个贫苦农民家里。1926 年秋，与土岸村范永祥（乳名黑黑）一起离家出走，到湖北黄安参加了农民自卫军。1926 年 10 月，在中共鄂东特委的领导下参加了黄、麻起义，加入工农革命军鄂东军（后改为工农革命军第七军），在当地开展游击战争和发动群众的工作。后又改编为工农红军第十一军第三十一师（当时只有七八十人），师长徐向前。
+                </div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    <img class="history-2" src="{{MEDIA_URL}}img/history/history-6.jpg">
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-2">刘廉民</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">刘廉民<a href="/s/qjezqh" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">刘廉民(1915-2000),河北省平山县孟家庄镇张家川村人，1915年11月生。1935年1月加入中国共产党，任孟家庄乡党支部书记，1938年2月任四区宣传委员、组织委员、区委书记，1939年11月先后任县委组织部副部长、县委委员、民运部长。
+                </div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    <img class="history-2" src="{{MEDIA_URL}}img/history/history-5.png">
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-2">戎冠秀</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">戎冠秀<a href="/s/rgx" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">1896年出生在河北省平山县。1937年抗日战争爆发后，参加妇女抗日救国会，从此走上了革命道路。1938年加入中国共产党，同年任下盘松村妇救会会长，伤病员转运站站长。1944年2月10日——14日在阜平县北崖村召开的晋察冀边区第一届群英会上，她被授予“北岳区拥军模范——子第兵的母亲”光荣称号。1949年，她作为华北区人民代表出席了第一届全国政协会议，参加了开国大典，还被评为全国“三八”红旗手标兵，后多次出席全国劳动模范会议和拥军优属表彰会议。先后当选第一、二、三、四、五届全国人大代表，第三、四届全国妇代会代表，全国妇联第四届执行委员会委员，河北省妇联第五、六届执委会委员。1973年起任平山县妇联会名誉主任。1989年病逝，享年93岁。
+                </div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    <img class="history-2" src="{{MEDIA_URL}}img/history/history-4.png">
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-2">周建屏</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">周建屏<a href="/s/zjp" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">周建屏，原籍江西金溪县左原村，出生在云南宣威县倘塘村。1926年加入中国共产党。参加了平型关大战。1937年任晋察冀军区第四军分区司令员，与政委刘道生带一教导营，在滹沱河上游开辟抗日根据地，并成为晋察冀边区模范抗日根据地。1938年6月13日，晋察冀军区第四军分区司令员周建屏，因病去世，终年47岁。为纪念这位南征北战、屡建奇功的八路军优秀将领，1939年，在平山县小觉镇东山坡上修建了周建屏烈士陵园，并先从平山、井陉、获鹿三县分别划出部分地区，成立建屏县。后改在平山县西部划出部分地区，组成建屏县。
+                </div>
+
+                <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595 pr">
+                    <img class="history-2" src="{{MEDIA_URL}}img/history/history-2.png">
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                    <span class="text-2">平山团所属三五九旅 旅长兼政委王震</span>
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71 pt-16">平山团<a href="/s/pst" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-80 f12 letter-spacing-1 line-height-20 co-959595">平山团（八路军120师359旅718团）被聂荣臻誉为“太行山上铁的子弟兵”。平山县委在农村支部作了动员之后，很快有一百多名共产党员报名。1937年11月6日，晋察冀边区成立的前一天，平山团正式成立。当时晋察冀边区武装力量不足3000人，平山团的人数就占到了50％以上，平山团第一任团长为陈宗尧，李铨任政委。</div>
+                
+                <!-- <div class="col-md-12 col-xs-12 pt-25 pb-5 f12 co-959595">
+                    1948-1949
+                    <img class="history-4" src="{{MEDIA_URL}}img/history/history-6.png">
+                    <img class="circle" src="{{MEDIA_URL}}img/history/circle.jpg">
+                </div>
+                <div class="col-md-12 col-xs-12 co-b86f71">三大战役<a href="/s/sdzy" class="more">更多</a></div>
+                <div class="col-md-12 col-xs-12 pt-15 pb-10"><span class="short-line-1"></span></div>
+                <div class="col-md-12 col-xs-12 pt-10 pb-40 f12 letter-spacing-1 line-height-20 co-959595">三大战役是指1948年9月至1949年1月，中国人民解放军同中华民国国军进行的战略决战，包括辽沈战役、淮海战役、平津战役三个战略性战役。1948年，解放军攻克拥有10万重兵、工事坚固的山东省会城市济南。济南战役是人民解放军攻克敌人重点设防的大城市的开始。这一战役揭开了战略决战的序幕。辽沈、淮海、平津三大战役，历时142天，共争取起义、投诚、接受和平改编与歼灭国民党正规军144个师，非正规军29个师，合计共154万余人。国民党赖以维持其反动统治的主要军事力量基本上被消灭。三大战役的胜利，奠定了人民解放战争在全国胜利的基础。
+                </div> -->
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

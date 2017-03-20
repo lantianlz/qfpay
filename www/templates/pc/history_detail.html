@@ -1,0 +1,58 @@
+{% extends "pc/base/base_home.html" %}
+
+{% block title %}历史详情{% endblock %}
+{% block css %}
+<style type="text/css">
+body{
+    background-color: #eeeeee;
+}
+.short-line{
+    width: 100px;
+    background-color: #b86f71;
+    height: 3px;
+    display: inline-block;
+}
+.point{
+    width: 5px;
+    height: 5px;
+    background-color: #b86f71;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 2px;
+}
+.news p{
+    text-indent: 25px;
+}
+</style>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="row pb-20 bgc-ffffff">
+        <div class="col-md-12 col-xs-12 text-center co-959595 pt-40 f18 letter-spacing-1 bgc-ffffff">
+            平山团
+        </div>
+        <div class="col-md-12 col-xs-12 text-center pt-10 bgc-ffffff pb-20 pl-0 pr-0">
+            <span class="short-line"></span>
+            <div class="col-md-12 col-xs-12 text-center border-bottom-1 bdc-959595"></div>
+        </div>
+
+        <div class="col-md-12 col-xs-12 co-959595">
+            <div class="col-md-6 col-xs-6 col-md-offset-3 col-xs-offset-3 pb-10 text-center f12 border-bottom-1 bdc-eeeeee">
+                <span>1930年</span>
+            </div>
+            <div class="col-md-4 col-xs-4 col-md-offset-4 col-xs-offset-4 pt-15">
+                <img class="w100p" src="{{MEDIA_URL}}img/history/history-1.png">
+            </div>
+            <div class="col-md-10 col-xs-10 col-md-offset-1 col-xs-offset-1 f12 pt-25 pb-20 letter-spacing-1 news">
+                <p>平山团（八路军120师359旅718团）被聂荣臻誉为“太行山上铁的子弟兵”。1937年7月卢沟桥事变后，眼看国民党的部队纷纷败退，日寇横行，人们都盼望着能有一支自己的武装部队来保卫家园。平山县委在农村支部作了动员之后，很快有一百多名共产党员报名。1937年11月6日，晋察冀边区成立的前一天，平山团正式成立。当时晋察冀边区武装力量不足3000人，平山团的人数就占到了50％以上，平山团第一任团长为陈宗尧，李铨任政委。</p>
+                <p>1948年，平山团改为中国人民解放军第1兵团第2军第5师第14团，在兵团司令员王震的指挥下，参加了瓦子街、西府、长宁、荔北、梯山、扶眉等战斗。1949年2月，“平山团”随王震将军从酒泉一路西进，徒步行军2871公里，最后进军新疆，平叛剿匪，建立人民政权。</p>
+                <p>1952年2月，放下枪杆子的平山团将士又一次响应军委号召，没有回生养自己的燕赵故土，而是扶起了拓荒的犁铧，成了新疆黄滩壁的第一批主人，成了新疆建设兵团的第一批人。
+                </p>
+            </div>
+        </div>
+
+        
+    </div>
+</div>
+{% endblock %}

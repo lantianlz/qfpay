@@ -1,0 +1,198 @@
+{% extends "pc/base/base.html" %}
+
+{% block title %}订单统计{% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+.list-group{
+    padding-right: 0;
+    padding-bottom: 25px;
+}
+.list-group-item:last-child{
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.list-group-item{
+    border: 0;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 0;
+}
+.date{
+    color: #bbb;
+    padding-top: 5px;
+}
+.txt{
+    font-size: 16px;
+    padding-top: 5px;
+}
+.order{
+    padding-right: 55px;
+    padding-left: 55px;
+}
+.pay-icon{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 32px;
+}
+.pay-icon img{
+    width: 100%;
+}
+.price{
+    position: absolute;
+    right: 15px;
+    top: 22px;
+    font-size: 18px;
+}
+.input-group-sm>.form-control, 
+.input-group-sm>.input-group-addon, 
+.input-group-sm>.input-group-btn>.btn{
+    border-radius: 1px;
+}
+.total{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background-color: #eee;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: right;
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language: 'zh-CN',
+        minView: 1,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language: 'zh-CN',
+        minView: 1,
+        autoclose: true
+    });
+</script>
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+    <div class="row">
+        <form action="." class="form-inline col-md-12 pt-10" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="2017-03-01 08:00">
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="2017-03-01 20:00">
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <div class="col-md-12">
+            <ul class="list-group col-md-12">
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/weixin.png">
+                    </span>
+                    <div class="col-md-12 txt">微信收款</div>
+                    <div class="col-md-12 date">2017-03-20 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>15.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/alipay.png">
+                    </span>
+                    <div class="col-md-12 txt">支付宝收款</div>
+                    <div class="col-md-12 date">2017-03-19 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>22.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/weixin.png">
+                    </span>
+                    <div class="col-md-12 txt">微信收款</div>
+                    <div class="col-md-12 date">2017-03-20 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>15.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/alipay.png">
+                    </span>
+                    <div class="col-md-12 txt">支付宝收款</div>
+                    <div class="col-md-12 date">2017-03-19 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>22.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/weixin.png">
+                    </span>
+                    <div class="col-md-12 txt">微信收款</div>
+                    <div class="col-md-12 date">2017-03-20 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>15.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/alipay.png">
+                    </span>
+                    <div class="col-md-12 txt">支付宝收款</div>
+                    <div class="col-md-12 date">2017-03-19 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>22.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/weixin.png">
+                    </span>
+                    <div class="col-md-12 txt">微信收款</div>
+                    <div class="col-md-12 date">2017-03-20 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>15.00</span>
+                    </span>
+                </li>
+                <li class="list-group-item col-md-12 order">
+                    <span class="pay-icon">
+                        <img src="{{MEDIA_URL}}img/alipay.png">
+                    </span>
+                    <div class="col-md-12 txt">支付宝收款</div>
+                    <div class="col-md-12 date">2017-03-19 17:22:22</div>
+                    <span class="price">
+                        <i class="fa fa-rmb f13"></i>
+                        <span>22.00</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="total">
+            <div class="col-md-12">
+                收款总金额：<i class="fa fa-rmb pr-2 co-c23531"></i>
+                <span class="fb f18 co-c23531">1299.00</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "mobile/base.html" %}
+{% block base_css %}
+<style type="text/css">
+	.nav-bottom{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        font-size: 12px;
+        z-index: 999;
+    }
+    .nav{
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .nav>a{
+        color: #c9d7dd;
+    }
+    .nav.active>a{
+        color: #f07925;
+    }
+    .nav-img{
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        background-size: 118px;
+    }
+    .nav-img-1{
+        background: url({{MEDIA_URL}}img/nav.png) no-repeat -16px -44px;
+        background-size: 118px;
+    }
+    .nav.active .nav-img-1{
+        background: url({{MEDIA_URL}}img/nav.png) no-repeat -16px -15px;
+        background-size: 118px;
+    }
+    .nav-img-2{
+        background: url({{MEDIA_URL}}img/nav.png) no-repeat -49px -44px;
+        background-size: 118px;
+    }
+    .nav.active .nav-img-2{
+        background: url({{MEDIA_URL}}img/nav.png) no-repeat -49px -15px;
+        background-size: 118px;
+    }
+    .nav-img-3{
+        background: url({{MEDIA_URL}}img/nav.png) no-repeat -82px -44px;
+        background-size: 118px;
+    }
+    .nav.active .nav-img-3{
+        background: url({{MEDIA_URL}}img/nav.png) no-repeat -82px -15px;
+        background-size: 118px;
+    }
+
+    .back{
+        background-color: rgba(0, 0, 0, 0.5);
+        /*opacity: 0.7;*/
+        width: 40px;
+        height: 40px;
+        position: fixed;
+        left: 15px;
+        top: 15px;
+        text-align: center;
+        z-index: 9999;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 25px;
+        padding-top: 6px;
+        -webkit-animation: back 1s 1s both;
+                animation: back 1s 1s both;
+    }
+    .back:hover, .back:focus{
+        color: #fff;
+    }
+    @-webkit-keyframes back {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0.3;
+        }
+    }
+    @keyframes back {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0.3;
+        }
+    }
+</style>
+{% block css %}{% endblock %}
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        FastClick.attach(document.body);
+
+        // $('.back').on('click', function(){
+        //     window.history.go(-1);
+        // });
+    });
+</script>
+{% block js %}{% endblock %}
+{% endblock %}
+
+{% block base_container %}
+
+{% block back %}
+<a class="back" href="{% block back_url %}/{% endblock %}">
+    <i class="fa fa-angle-left"></i>
+</a>
+{% endblock %}
+
+{% block container %}{% endblock %}
+
+{% block nav %}
+<div class="col-xs-12 h67"></div>
+<div class="nav-bottom bgc-ffffff">
+    <div class="row ml-0 mr-0">
+        <div class="col-xs-4 nav {% if request.path == "/" %}active{% endif %}">
+            <a href="/">
+                <div class="col-xs-12 pr-0 pl-0">
+                    <span class="nav-img nav-img-1"></span>
+                </div>
+                <div class="col-xs-12 pr-0 pl-0 pt-5">即刻服务</div>
+            </a>
+        </div>
+        <div class="col-xs-4 nav {% if request.path == "/service/my_order" %}active{% endif %}">
+            <a href="/service/my_order">
+                <div class="col-xs-12 pr-0 pl-0 pt-2">
+                    <span class="nav-img nav-img-2"></span>
+                </div>
+                <div class="col-xs-12 pr-0 pl-0 pt-5">我的预约</div>
+            </a>
+        </div>
+        <div class="col-xs-4 nav {% if request.path == "/account/profile" %}active{% endif %}">
+            <a href="/account/profile">
+                <div class="col-xs-12 pr-0 pl-0">
+                    <span class="nav-img nav-img-3"></span>
+                </div>
+                <div class="col-xs-12 pr-0 pl-0 pt-5">个人中心</div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% endblock %}

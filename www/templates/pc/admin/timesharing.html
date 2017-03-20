@@ -1,0 +1,236 @@
+{% extends "pc/admin/home.html" %}
+{% block title %}分时统计{% endblock title %}
+{% block css %}
+<style type="text/css">
+.modal-content {
+    border-radius: 1px;
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    var searchTimesharingStatistic = function(){
+        /*
+            交易笔数
+        */
+        ajaxSend(
+            "/admin/timesharing/get_timesharing_statistics_data", 
+            {
+                'date': $('#date_search').val(),
+                'shop_id': "{{ shop.shop_id }}"
+            },
+            function(data){
+                
+                $('.all_total').html($.Global.Utils.formatPrice(data.all_total));
+                $('.average_total').html($.Global.Utils.formatPrice(data.average_total));
+
+                var main = echarts.init(document.getElementById('timesharing_statistic_chart'));
+                
+                main.setOption({
+                    title: {
+                        text: '分时交易统计'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                              color: '#ddd',
+                              width: 1,
+                              type: 'solid'
+                            }
+                        },
+                        formatter: function(params, ticket, callback){
+                            var html = [
+                                '{0}点 - {1}点<br />交易金额：{2}'
+                            ].join('');
+                            
+                            return String.format(
+                                html, 
+                                params[0].name?params[0].name:'0',
+                                params[0].name + 1,
+                                params[0].value?params[0].value:'0'
+                            );
+                        }
+                    },
+                    legend: {
+                        data:['小时交易金额']
+                    },
+                    calculable: false,
+                    grid: {
+                        left: 100,
+                        right: 80
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        data: data.xdata,
+                        splitLine: {
+                            show: false,
+                            lineStyle: {
+                                color: ['#e2e2e2'],
+                                width: 1,
+                                type: 'solid'
+                            }
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#888',
+                                width: 2,
+                                type: 'solid'
+                            }
+                        }
+                    }],
+                    yAxis: [{
+                        type : 'value',
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: ['#e2e2e2'],
+                                width: 1,
+                                type: 'solid'
+                            }
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#888',
+                                width: 2,
+                                type: 'solid'
+                            }
+                        }
+                    }],
+                    color: ['#4091fc'],
+                    series : [{
+                        name: '小时交易金额',
+                        type: 'bar',
+                        smooth: true,
+                        data: data.ydata
+                    }]
+                });
+
+                {% if not shop %}
+                // 事件绑定
+                main.on('click', function(params){
+                    var title = String.format(
+                        '{0}点 - {1}点交易排行',
+                        params.name,
+                        params.name + 1
+                    );
+                    showTimesharingDetail(params.name, title);
+                });
+                {% endif %}
+
+            }
+        );
+
+    },
+    showTimesharingDetail = function(hour, title){
+
+        ajaxSend(
+            "/admin/timesharing/get_timesharing_detail_data", 
+            {
+                'date': "{{ date }}",
+                'hour': hour
+            },
+            function(data){
+                var html = [
+                '<div class="modal fade" id="detail_modal" tabindex="-1" role="dialog">',
+                    '<div class="modal-dialog">',
+                        '<div class="modal-content">',
+                            '<div class="modal-header pb-5">',
+                                '<h4 class="modal-title">'+title+'</h4>',
+                            '</div>',
+                        '<div class="modal-body">',
+                            '<table class="table table-hover">',
+                                '<thead>',
+                                    '<tr>',
+                                        '<th>#</th>',
+                                        '<th>所属商户</th>',
+                                        '<th>交易金额</th>',
+                                    '</tr>',
+                                '</thead>',
+                                '<tbody>',
+
+                                '</tbody>',
+                            '</table>',
+                        '</div>',
+                    '</div>',
+                '</div>'
+                ].join('');
+
+                $('#detail_modal').remove();
+
+                $("body").append(html);
+
+                // 填充数据
+                $.map(data.data, function(per, i){
+                    $('#detail_modal tbody').append(
+                        String.format([
+                            '<tr>',
+                                '<td>{0}</td>',
+                                '<td><a href="/admin/per_shop/{1}/" target="_blank">{2}</a></td>',
+                                '<td>{3}</td>',
+                            '</tr>'
+                        ].join(''), i+1, per.shop_id, per.name, $.Global.Utils.formatPrice(per.total))
+                    );
+                });
+
+                $('#detail_modal').modal({'show': true});
+            }
+        );
+
+        
+    };
+
+
+    $('.tab-pane>div').width($('.tab-pane').width());
+
+    $('.search').on('click', function(){
+        searchTimesharingStatistic();
+    });
+
+    $('.search').click();
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-70">
+    <div class="col-md-12 pt-20">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">分时日期</span>
+                <input type="text" class="form-control" id="date_search" value="{{date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+            {% if shop %}
+            <div class="input-group input-group-sm pb-10 text-right pa co-4091fc f20" style="right: 20px; top: 20px;">
+                {{shop.name}}( {{shop.owner}} ) [ {{shop.contact}} - {{shop.tel}} ]
+            </div>
+            {% endif %}
+        </form>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-12 pr-0 pl-0 pt-30" id="timesharing_statistic_chart" style="height: 480px;"></div>
+        <div class="col-md-12 text-right pt-0 pb-10 pr-0">
+            <span>总交易金额: </span>
+            <span class="f20 fb co-4091fc all_total pl-5">0</span>
+            <span>，平均每小时交易金额: </span>
+            <span class="f20 fb co-4091fc average_total pl-5">0</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

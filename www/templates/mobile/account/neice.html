@@ -1,0 +1,38 @@
+{% extends "mobile/base_home.html" %}
+{% block title %}邀你内测{% endblock title %}
+{% block css %}
+<style type="text/css">
+.bg{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.qrcode{
+    width: 35%;
+    padding-top: 68%;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+
+    });
+</script>
+{% endblock %}
+
+{% block back %}{% endblock %}
+
+{% block container %}
+<div class="row ml-0 mr-0 pt-20 pr">
+    <div class="bg">
+        <img class="w100p" src="{{MEDIA_URL}}img/profile/bg-neice.jpg">
+    </div>
+    <div class="col-xs-12 text-center">
+        <img class="qrcode" src="{{qrcode.get_img}}">
+    </div>
+</div>
+{% endblock %}
+
+{% block nav %}{% endblock %}

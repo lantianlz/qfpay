@@ -1,0 +1,52 @@
+body,html{
+    height: 100%;
+    background: linear-gradient(to right, #f68e57, #f9b757);
+}
+.list-group-item{
+    box-shadow: rgba(71, 71, 71, 0.17) 1px 5px 0px;
+    border: 0;
+    border-radius: 2px;
+}
+.list-group-item:last-child {
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+.list-group-item:first-child {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+.avatar{
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    position: absolute;
+    left: 10px;
+    top: 3px;
+}
+.bg-curtain{
+    height: 110px;
+    width: 110px;
+    border-radius: 50%;
+    position: absolute;
+    left: -102px;
+    top: -25px;
+}
+.fa-quote-left{
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    font-size: 15px;
+}
+.fa-plug{
+    position: absolute;
+    left: 45%;
+    bottom: -6px;
+    font-size: 35px;
+    -webkit-transform: rotateZ(-45deg);
+            transform: rotateZ(-45deg);
+    color: #c3d4da;
+}
+.animated{
+    -webkit-animation-duration: 0.8s;
+            animation-duration: 0.8s;
+}

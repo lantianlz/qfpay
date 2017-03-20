@@ -1,0 +1,165 @@
+{% extends "pc/admin/home.html" %}
+
+{% block title %}业务员统计{% endblock title %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    
+    var searchSalesman = function(){
+        /*
+            商户排行
+        */
+        ajaxSend(
+            "/admin/salesman/get_salesman_statistics_data", 
+            {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()},
+            function(data){
+
+                var main = echarts.init(document.getElementById('percentage_chart'));
+
+                main.setOption({
+
+                    title: {
+                        text: '销售业绩占比',
+                        left: 'center',
+                        top: 20,
+                        textStyle: {
+                            color: '#555'
+                        }
+                    },
+
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b}: {c}({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 'right',
+                        data: data.xdata
+                    },
+                    series: [{
+                        name: '销售业绩占比',
+                        type: 'pie',
+                        radius : '55%',
+                        center: ['50%', '50%'],
+                        data: data.ydata,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                label:{ 
+                                    show: true, 
+                                    formatter: '{b}: {c} ({d}%)' 
+                                }
+                            },
+                            labelLine :{show:true}
+                        }
+                    }]
+                });
+
+                /*********************************************************/
+                var dataTemplate = _.template([
+                    '<% _.each(records, function(record, num){ %>',
+                    '<tr>',
+                        '<td><%= num+1 %></td>',
+                        '<td><%= record.name %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.profit) %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.profit_after_tax) %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.percentage) %></td>',
+                        '<td class="fb fi co-4091fc"><%= $.Global.Utils.formatPrice(record.percentage_price) %></td>',
+                    '</tr>',
+                    '<% }) %>'
+                ].join(''));
+                $('.table tbody').html(dataTemplate({'records': data.data}));
+                $('.all_total').html($.Global.Utils.formatPrice(data.all_total));
+                $('.all_profit').html($.Global.Utils.formatPrice(data.all_profit));
+                $('.all_percentage_price').html($.Global.Utils.formatPrice(data.all_percentage_price));
+            }
+        )
+
+    };
+
+    $('.tab-pane>div').width($('.tab-pane').width());
+
+    $('.search').on('click', function(){
+
+        searchSalesman();
+
+    });
+
+    $('.search').click();
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-70">
+    <div class="col-md-12 pt-20">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12">
+        <div id="percentage_chart" style="height: 550px;"></div>
+    </div>
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>业务员</th>
+                    <th>交易金额</th>
+                    <th>交易利润</th>
+                    <th>税后利润(3%)</th>
+                    <th>提成比例</th>
+                    <th>提成金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-12 text-right pb-20">
+        总交易金额<span class="co-4091fc fb f16 pl-5 pr-5 all_total">0</span>元，
+        总交易利润<span class="co-4091fc fb f16 pl-5 pr-5 all_profit">0</span>元，
+        总提成<span class="co-4091fc fb f16 pl-5 pr-5 all_percentage_price">0</span>元
+    </div>
+</div>
+{% endblock %}

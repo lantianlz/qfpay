@@ -1,0 +1,143 @@
+{% extends "pc/base/base_home.html" %}
+
+{% block title %}联系我们{% endblock %}
+
+{% block css %}
+<style type="text/css">
+body{
+    background-color: #eeeeee;
+}
+.short-line{
+    width: 100px;
+    background-color: #b86f71;
+    height: 3px;
+    display: inline-block;
+}
+.short-line-1{
+    width: 50px;
+    background-color: #b86f71;
+    height: 1px;
+    display: inline-block;
+}
+.list-inline>li{
+	padding-left: 40px;
+	padding-right: 40px;
+}
+
+.fa-map-marker{
+    position: absolute;
+    left: 49%;
+    top: 30px;
+    font-size: 16px;
+    
+}
+li:hover .fa-map-marker{
+    left: 48%;
+    top: 30px;
+    font-size: 20px;
+    color: #b86f71;
+}
+.fa-mobile{
+    position: absolute;
+    left: 49%;
+    top: 30px;
+    font-size: 16px;
+}
+li:hover .fa-mobile{
+    left: 49%;
+    top: 30px;
+    font-size: 20px;
+    color: #b86f71;
+}
+.fa-envelope{
+    position: absolute;
+    left: 48%;
+    top: 30px;
+}
+li:hover .fa-envelope{
+    left: 48%;
+    top: 30px;
+    font-size: 20px;
+    color: #b86f71;
+}
+.bg-line{
+    background-color: #ffffff;
+}
+li:hover .bg-line{
+    background-color: #b86f71;
+}
+</style>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="row">
+    	<div class="col-md-12 col-xs-12 text-center co-959595 pt-40 f18 letter-spacing-1  bgc-ffffff">
+            关于我们
+        </div>
+        <div class="col-md-12 col-xs-12 text-center co-959595 pt-5 f16  bgc-ffffff">
+            About Us
+        </div>
+        <div class="col-md-12 col-xs-12 text-center pt-10 pl-0 pr-0  bgc-ffffff">
+            <span class="short-line"></span>
+            <div class="col-md-12 col-xs-12 text-center border-bottom-1 bdc-959595"></div>
+        </div>
+
+       	<div class="bgc-ffffff col-md-12 col-xs-12 pl-0 pr-0 pb-30">
+	        <div class="col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2 pt-30 pb-15 text-center co-959595 pt-5 f12 letter-spacing-1  ">
+	        平山县西柏坡儿女联谊会是由红军后代发起，西柏坡儿女自愿结成的地方性非盈利性革命后代联谊组织。
+	        </div>
+	        <div class="col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2 pt-15 pb-15 text-center co-959595 pt-5 f12 letter-spacing-1 line-height-20">
+            联谊会明确把“西柏坡儿女”定位在，老一辈于1949年建国前参加共产党、参加革命的后代们。在平山生、平山长或者老一辈是在平山老区工作、学习过的革命者，无论是红军、八路军、新四军、解放军和地方干部之后，无论是领导还是普通战士、职工之后，都是西柏坡儿女，愿意在这个旗帜下一起联谊、合作的都欢迎。
+	        </div>
+	        <div class="col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2 pt-30 pb-30 text-center co-959595 pt-5 f12 letter-spacing-1">
+	        	我们的会风是：<span class="f13 co-b86f71">传承西柏坡精神，弘扬革命传统，奉献老区人民，担当历史使命。</span>
+	        </div>
+	    </div>
+
+        <div class="col-md-12 col-xs-12 text-center co-959595 pt-40 f18 letter-spacing-1">
+            联系我们
+        </div>
+        <div class="col-md-12 col-xs-12 text-center co-959595 pt-5 f16">
+            Content Us
+        </div>
+        <div class="col-md-12 col-xs-12 text-center pt-10  pl-0 pr-0">
+            <span class="short-line"></span>
+            <div class="col-md-12 col-xs-12 text-center border-bottom-1 bdc-959595"></div>
+        </div>
+        <div class="col-md-12 col-xs-12 pt-20">
+        	<ul class="col-md-12 col-xs-12 pt-20 list-inline text-center co-959595">
+        		<li class="col-md-4 col-xs-4">
+        			<div class="col-md-12 col-xs-12 bgc-ffffff">
+        				<div class="col-md-12 col-xs-12 pt-30 pb-20 pr"><i class="fa fa-map-marker"></i></div>
+        				<div class="col-md-12 col-xs-12 pt-15 co-b86f71 f12">联谊会地址</div>
+        				<div class="col-md-12 col-xs-12 pt-5"><span class="short-line-1"></span></div>
+        				<div class="col-md-12 col-xs-12 pt-15 pb-40 f12 pl-0 pr-0">河北省石家庄市平山县温塘镇乐城小区20号楼</div>
+        			</div>
+                    <div class="col-md-12 col-xs-12 pt-3 bg-line pl-0 pr-0"></div>
+        		</li>
+        		<li class="col-md-4 col-xs-4">
+        			<div class="col-md-12 col-xs-12 bgc-ffffff">
+        				<div class="col-md-12 col-xs-12 pt-30 pb-20 pr"><i class="fa fa-mobile"></i></div>
+        				<div class="col-md-12 col-xs-12 pt-15 co-b86f71 f12">联系方式</div>
+        				<div class="col-md-12 col-xs-12 pt-5"><span class="short-line-1"></span></div>
+        				<div class="col-md-12 col-xs-12 pt-15 pb-40 f12 pl-0 pr-0">0311-82897604</div>
+        			</div>
+                    <div class="col-md-12 col-xs-12 pt-3 bg-line pl-0 pr-0"></div>
+        		</li>
+        		<li class="col-md-4 col-xs-4">
+        			<div class="col-md-12 col-xs-12 bgc-ffffff">
+        				<div class="col-md-12 col-xs-12 pt-30 pb-20 pr"><i class="fa fa-envelope"></i></div>
+        				<div class="col-md-12 col-xs-12 pt-15 co-b86f71 f12">电子邮件</div>
+        				<div class="col-md-12 col-xs-12 pt-5"><span class="short-line-1"></span></div>
+        				<div class="col-md-12 col-xs-12 pt-15 pb-40 f12 pl-0 pr-0">1228272758@qq.com</div>
+        			</div>
+                    <div class="col-md-12 col-xs-12 pt-3 bg-line pl-0 pr-0"></div>
+        		</li>
+        	</ul>
+        </div>
+
+        <div class="col-md-12 col-xs-12 pt-50"></div>
+   	</div>
+</div>
+{% endblock %}

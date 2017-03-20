@@ -1,0 +1,528 @@
+{% extends "pc/admin/home.html" %}
+
+{% block title %}商户统计{% endblock title %}
+
+{% block css %}
+<style type="text/css">
+.score-container{
+    padding-top: 10px;
+    padding-left: 0;
+    padding-right: 0;
+}
+.score-border{
+    border-bottom: 1px solid #dddddd;
+    position: relative;
+    padding-bottom: 16px;
+    padding-left: 260px; 
+    padding-right: 10px; 
+    padding-top: 6px;
+}
+.scores{
+    padding-left: 0;
+    padding-right: 0;
+}
+.score{
+    background-color: #4091fc;
+    position: relative;
+    text-align: right;
+    height: 25px; 
+    line-height: 25px;
+    width: 0;
+    cursor: pointer;
+    padding-right: 10px;
+    padding-left: 10px;
+    transition: all 0.5s ease-out;
+}
+.info-container{
+    position: absolute;
+    left: 8px; 
+    top: 8px; 
+}
+.num{
+    font-style: italic;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.avatar{
+    width: 35px;
+    border-radius: 50%;
+}
+.amount{
+    font-weight: bold;
+    color: #ffffff;
+}
+.shop-name{
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    width: 240px;
+    white-space: nowrap;
+}
+.trade-price{
+    width: 40px;
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    
+    var searchShopSort = function(){
+        /*
+            商户排行
+        */
+        ajaxSend(
+            "/admin/shop/get_shop_sort", 
+            {
+                'start_date': $('#start_date_search').val(), 
+                'end_date': $('#end_date_search').val()
+            },
+            function(data){
+                // 统计信息
+                $('#shop_sort .all_shop_count').html(data.all_shop_count);
+                $('#shop_sort .all_order_count').html(data.all_order_count);
+                $('#shop_sort .average_order_count').html(data.average_order_count);
+                $('#shop_sort .all_order_price').html($.Global.Utils.formatPrice(data.all_order_price));
+                $('#shop_sort .average_order_price').html($.Global.Utils.formatPrice(data.average_order_price));
+
+                // 排行
+                var sortTemplate = _.template([
+                    '<% _.each(records, function(record, num){ %>',
+                    '<div class="col-md-12 score-container f13">',
+                        '<div class="col-md-12 score-border">',
+                            '<div class="info-container">',
+                                '<span class="num"><%= num+1 %></span>',
+                                '<a class="pl-30 shop-name" href="/admin/per_shop/<%= record.shop_id %>/?start_date=<%= $("#start_date_search").val() %>&end_date=<%= $("#end_date_search").val() %>" target="_blank" title="<%= record.name %>" data-toggle="tooltip" data-placement="top"><%= record.name %>( <%= record.owner %> )</a>',
+                            '</div>',
+                            '<div class="col-md-12 score" data-toggle="tooltip" data-placement="top" title="总交易 <%= record.count %> 笔，总金额 <%= record.total %> 元，平均每笔 <%= record.average %> 元"  data-rate="<%= record.rate>=9?record.rate:9 %>%">',
+                                '<span class="amount"><%= record.total %></span>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                    '<% }) %>'
+                ].join(''));
+                $('.scores').html(sortTemplate({'records': data.data}));
+                $('[data-toggle="tooltip"]').tooltip();
+
+                window.setTimeout(function(){
+                    $.map($('.score'), function(per){
+                        $(per).css('width', $(per).data('rate'));
+                    });
+                }, 1);
+
+            }
+        )
+
+    },
+    searchOrderStatistic = function(){
+        /*
+            交易统计
+        */
+        ajaxSend(
+            "/admin/shop/get_order_statistic_data", 
+            {
+                'start_date': $('#start_date_search').val(), 
+                'end_date': $('#end_date_search').val(), 
+                'over_ten': $('.over-ten').attr("checked") == "checked"
+            },
+            function(data){
+
+                $('#order_statistic .all_order_price').html($.Global.Utils.formatPrice(data.all_order_price));
+                $('#order_statistic .average_order_price').html($.Global.Utils.formatPrice(data.average_order_price));
+                $('#order_statistic .all_order_count').html(data.all_order_count);
+                $('#order_statistic .average_order_count').html(data.average_order_count);
+
+                var main = echarts.init(document.getElementById('order_statistic_chart')),
+                    calculatePercent = function(length){
+                        if(length <= 90){
+                            return 0;
+                        } else if(90 < length && length <= 180){
+                            return 25;
+                        } else if(180 < length && length <= 270){
+                            return 50;
+                        } else if(270 < length && length <= 360){
+                            return 75;
+                        }
+                    },
+                    transformDate = function(date){
+                        /*
+                            日期转换
+                        */
+                        var dayMapping = {
+                            '0': '周日', 
+                            '1': '周一', 
+                            '2': '周二', 
+                            '3': '周三', 
+                            '4': '周四', 
+                            '5': '周五', 
+                            '6': '周六'
+                        };
+
+                        return date.substring(5) + dayMapping[new Date(date).getDay()];
+                    };
+                
+                main.setOption({
+                    title: {
+                        text: '日交易统计'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                              color: '#ddd',
+                              width: 1,
+                              type: 'solid'
+                            }
+                        },
+                        // formatter: '{b0}<br />{a0}: {c0}<br />{a1}: {c1} '
+                        formatter: function(params, ticket, callback){
+                            var html = [
+                                '{0}<br />{1}：{2}<br />{3}{4}'
+                            ].join('');
+
+                            return String.format(
+                                html, 
+                                transformDate(params[0].name),
+                                params[0].seriesName,
+                                params[0].value,
+                                params[1]?params[1].seriesName+"：":'',
+                                params[1]?params[1].value:''
+                            );
+                        }
+                    },
+                    legend: {
+                        data:['日交易金额', '日交易笔数']
+                    },
+                    dataZoom : {
+                        show : true,
+                        realtime : true,
+                        start : calculatePercent(data.x_price_data.length),
+                        end : 100,
+                        handleColor: 'rgba(64, 145, 252, 0.8)',
+                        fillerColor: 'rgba(64, 145, 252, 0.2)'
+                    },
+                    calculable: false,
+                    grid: {
+                        left: 100,
+                        right: 50
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        data: data.x_price_data,
+                        splitLine: {
+                            show: false,
+                            lineStyle: {
+                                color: ['#e2e2e2'],
+                                width: 1,
+                                type: 'solid'
+                            }
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#888',
+                                width: 2,
+                                type: 'solid'
+                            }
+                        }
+                    }],
+                    yAxis: [{
+                        type : 'value',
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: ['#e2e2e2'],
+                                width: 1,
+                                type: 'solid'
+                            }
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#888',
+                                width: 2,
+                                type: 'solid'
+                            }
+                        }
+                    }],
+                    color: ['#4091fc', '#c23531'],
+                    series : [{
+                        name: '日交易金额',
+                        type: 'line',
+                        smooth: true,
+                        data: data.y_price_data
+                    }, {
+                        name: '日交易笔数',
+                        type: 'line',
+                        smooth: true,
+                        data: data.y_count_data
+                    }]
+                });
+
+                // 事件绑定
+                main.on('click', function(params){
+                    window.open('/admin/timesharing?date=' + params.name, '_blank')
+                });
+
+            }
+        );
+
+    };
+
+    var pagination = new $.Global.Pagination.PaginationView(),
+        searchOrderList = function(startDate, endDate, priceSort, pageIndex){
+            /*
+                交易详情
+            */
+            ajaxSend(
+                "/admin/shop/get_order_list", 
+                {
+                    'start_date': startDate, 
+                    'end_date': endDate, 
+                    'price_sort': priceSort||false,
+                    'page_index': pageIndex||1
+                },
+                function(data){
+                    var listTemplate = _.template([
+                        '<% _.each(records, function(record){ %>',
+                        '<tr>',
+                            '<td><%= record.num %></td>',
+                            '<td><%= record.name %></td>',
+                            '<td><%= record.order_no %></td>',
+                            '<td><%= record.order_date %></td>',
+                            '<td><%= record.price %></td>',
+                            '<td><%= record.type %></td>',
+                            '<td><%= record.state %></td>',
+                        '</tr>',
+                        '<% }) %>'
+                    ].join(''));
+                    $('#order_list tbody').html(listTemplate({'records': data.data}));
+
+                    // 分页
+                    pagination.render(
+                        pageIndex,
+                        data.page_count,
+                        String.format(
+                            'search/{0}/{1}/{2}', 
+                            startDate,
+                            endDate,
+                            priceSort
+                        )
+                    );
+                }
+            );
+
+        };
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "search/(:startDate)/(:endDate)/(:priceSort)/:pageIndex":    "search",
+        },
+
+        search: function(startDate, endDate, priceSort, pageIndex){
+            searchOrderList(startDate, endDate, priceSort, pageIndex);
+        },
+
+    });
+    var router = new Router();
+    Backbone.history.start();
+
+
+    $('.tab-pane>div').width($('.tab-pane').width());
+
+    $('.search').on('click', function(){
+        searchShopSort();
+        searchOrderStatistic();
+        searchOrderList(
+            $('#start_date_search').val(), 
+            $('#end_date_search').val(),
+            $('.price-sort').attr("checked") == "checked",
+            1
+        );
+    });
+
+    // 排除价格小于10的交易
+    $('.over-ten').on('click', function(){
+        searchOrderStatistic();
+    });
+
+    // 价格排序
+    $('.price-sort').on('click', function(){
+        searchOrderList(
+            $('#start_date_search').val(), 
+            $('#end_date_search').val(),
+            $('.price-sort').attr("checked") == "checked",
+            1
+        );
+    });
+
+    $('.search').click();
+
+    // 查询当天
+    $('.search-today').on('click', function(){
+        $('#start_date_search').val(
+            $.Global.Utils.formatDate(new Date(), 'y-m-d')
+        );
+        $('#end_date_search').val(
+            $.Global.Utils.formatDate(new Date(), 'y-m-d')
+        );
+        $('.search').click();
+    });
+    // 查询昨天
+    $('.search-yesterday').on('click', function(){
+        $('#start_date_search').val(
+            $.Global.Utils.formatDate(
+                new Date(new Date().getTime() - 24*60*60*1000), 'y-m-d'
+            )
+        );
+        $('#end_date_search').val(
+            $.Global.Utils.formatDate(
+                new Date(new Date().getTime() - 24*60*60*1000), 'y-m-d'
+            )
+        );
+
+        $('.search').click();
+    });
+    // 查询当月
+    $('.search-week').on('click', function(){
+        var today = new Date();
+        today.setDate(1);
+        $('#start_date_search').val(
+            $.Global.Utils.formatDate(today, 'y-m-d')
+        );
+        $('#end_date_search').val($.Global.Utils.formatDate(new Date(), 'y-m-d'));
+        $('.search').click();
+    });
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-70">
+    <div class="col-md-12 col-xs-12 pt-20">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+            <div class="input-group input-group-sm pb-10 pl-25">
+                <button class="btn btn-danger btn-sm search-yesterday" type="button">查询昨天</button>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-primary btn-sm search-today" type="button">查询当天</button>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-info btn-sm search-week" type="button">查询当月</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12 col-xs-12">
+        <ul class="nav nav-pills orange-nav-pills col-md-12 col-xs-12 f13">
+            <li class="active">
+                <a href="#shop_sort" data-toggle="pill">
+                    <i class="fa fa-list-ol pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">列表</span>
+                    <span class="hidden-xs">商户排行</span>
+                </a>
+            </li>
+            <li>
+                <a href="#order_statistic" data-toggle="pill">
+                    <i class="fa fa-line-chart pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">修改</span>
+                    <span class="hidden-xs">交易统计</span>
+                </a>
+            </li>
+            <li>
+                <a href="#order_list" data-toggle="pill">
+                    <i class="fa fa-list pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">修改</span>
+                    <span class="hidden-xs">交易明细</span>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade pt-15 in active" id="shop_sort">
+                <div class="col-md-12 col-xs-12 pl-0 pr-0 pt-20 pb-15">
+                    此时间段，交易商户总数 <span class="co-4091fc fb f16 all_shop_count">0</span> 家，总交易流水 <span class="co-4091fc fb f16 all_order_price">0</span> 元，平均每家交易 <span class="co-4091fc fb f16 average_order_price">0</span> 元，总交易笔数 <span class="co-c23531 fb f16 all_order_count">0</span> 笔，平均每家交易 <span class="co-c23531 fb f16 average_order_count">0</span> 笔。
+                </div>
+                <div class="col-md-12 col-xs-12 scores">
+                    
+                </div>
+            </div>
+            <div class="tab-pane fade pt-70" id="order_statistic">
+                <div class="col-md-12 col-xs-12 pr-0 checkbox text-right mt-0 mb-0">
+                    <label>
+                        <input type="checkbox" value="1" class="over-ten">
+                        排除金额小于10的交易
+                    </label>
+                </div>
+                <div class="col-md-12 col-xs-12 pr-0 pl-0" id="order_statistic_chart" style="height: 400px;"></div>
+                <div class="col-md-12 col-xs-12 text-right pt-20 pb-10 pr-0">
+                    <span>总交易金额: </span>
+                    <span class="f20 fb co-4091fc all_order_price pl-5">0</span>
+                    <span>，平均日交易金额: </span>
+                    <span class="f20 fb co-4091fc average_order_price pl-5">0</span>
+                    <span>，总交易笔数: </span>
+                    <span class="f20 fb co-c23531 all_order_count pl-5">0</span>
+                    <span>，平均日交易笔数: </span>
+                    <span class="f20 fb co-c23531 average_order_count pl-5">0</span>
+                </div>
+            </div>
+            <div class="tab-pane fade pt-15" id="order_list">
+                <span class="checkbox pa co-4091fc fi" style="left: 340px; top: -1px;">
+                    <label>
+                        <input type="checkbox" value="1" class="price-sort">
+                        按金额排序
+                    </label>
+                </span>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>商户名称</th>
+                            <th>交易查询号</th>
+                            <th>交易日期</th>
+                            <th>交易金额</th>
+                            <th>交易类型</th>
+                            <th>交易状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+
+                <div class="text-center">
+                    <ul class="pagination pagination-sm qx-pagination">
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

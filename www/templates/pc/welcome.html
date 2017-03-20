@@ -1,0 +1,111 @@
+{% extends "pc/base/base.html" %}
+
+{% block title %}欢迎页{% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+.bg-img{
+    width: 100%;
+}
+.logo{
+    width: 90px;
+    position: absolute;
+    left: 400px;
+    top: 340px;
+}
+.txt-1{
+    width: 570px;
+    position: absolute;
+    left: 515px;
+    top: 340px;
+}
+.txt-2{
+    width: 570px;
+    position: absolute;
+    left: 515px;
+    top: 400px;
+}
+.bird-1{
+    width: 150px;
+    position: absolute;
+    left: 735px;
+    top: 75px;
+}
+.bird-2{
+    width: 150px;
+    position: absolute;
+    left: 620px;
+    top: 0px;
+}
+.go{
+    color: #fff7a9;
+    position: absolute;
+    right: 90px;
+    bottom: 190px;
+}
+/*.enter{
+    width: 70px;
+}*/
+.enter{
+    display: inline-block;
+    padding-left: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.seconds{
+    position: absolute;
+    left: -17px;
+    top: 0px;
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var imgHeight = 800*1140/1280,
+        marginTop = $(window).height() - imgHeight;
+
+    $('.bg').css('marginTop', marginTop/2);
+
+    var seconds = 5;
+    window.setInterval(function(){
+
+        if(seconds <= 1){
+            window.location.href = "/index";
+        }
+        else{
+            seconds -= 1;
+
+            $('.seconds').text(seconds+'s');
+        }
+
+        if (seconds%2 == 0) {
+            $('.enter').fadeTo('slow', 1);
+        } else {
+            $('.enter').fadeTo('slow', 0.1);
+        }
+        
+    }, 1000);
+    $('.enter').fadeTo('slow', 0.1);
+    
+});
+</script>
+{% endblock %}
+
+{% block base_container %}
+<div class="container bg pr">
+    <img class="bg-img" src="{{MEDIA_URL}}img/welcome/bg.jpg">
+    <img class="logo" src="{{MEDIA_URL}}img/logo.png">
+    <img class="txt-1" src="{{MEDIA_URL}}img/welcome/txt-1.png">
+    <img class="txt-2" src="{{MEDIA_URL}}img/welcome/txt-2.png">
+    <!-- <img class="bird-1" src="{{MEDIA_URL}}img/welcome/bird-1.png"> -->
+    <!-- <img class="bird-2" src="{{MEDIA_URL}}img/welcome/bird-2.png"> -->
+    <a class="go" href="/index">
+        <!-- <img class="enter" src="{{MEDIA_URL}}img/welcome/enter.png"> -->
+        <span class="enter">进入页面</span>
+        <span class="seconds">5s</span>
+    </a>
+</div>
+{% endblock base_container%}
