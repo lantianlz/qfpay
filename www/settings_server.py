@@ -18,13 +18,13 @@ import sys
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../'))])
 
-SERVER_NAME = 'LYH_WEB0' if not LOCAL_FLAG else 'DEVELOPER'
-SERVER_DOMAIN = 'chinaxbpenlyh.com' if not LOCAL_FLAG else '192.168.0.199:8002'
-MAIN_DOMAIN = ('http://www.%s' % SERVER_DOMAIN) if not LOCAL_FLAG else ('http://%s' % SERVER_DOMAIN)
+SERVER_NAME = 'qfpay_WEB0' if not LOCAL_FLAG else 'DEVELOPER'
+SERVER_DOMAIN = 'x.xcqifu.com' if not LOCAL_FLAG else '192.168.0.199:8002'
+MAIN_DOMAIN = ('http://%s' % SERVER_DOMAIN) if not LOCAL_FLAG else ('http://%s' % SERVER_DOMAIN)
 
-IMG0_DOMAIN = 'http://img0.chinaxbpenlyh.com'
+IMG0_DOMAIN = 'http://img0.x.xcqifu.com'
 
-EMAIL_FROM = u'"联谊会" <service@3-10.cc>'
+EMAIL_FROM = u'"钱方统计" <service@3-10.cc>'
 EMAIL_HOST_USER = 'service@3-10.cc'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_HOST = 'smtp.mxhichina.com'
@@ -68,7 +68,7 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 MEDIA_ROOT = os.path.abspath(os.path.join(SITE_ROOT, '../static'))
-MEDIA_URL = '/static/' if LOCAL_FLAG else ('http://static.%s/' % SERVER_DOMAIN)
+MEDIA_URL = '/static/' if LOCAL_FLAG else ('http://staticx.xcqifu.com/')
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
@@ -140,7 +140,7 @@ LOGGING = {
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
 SESSION_COOKIE_HTTPONLY = True
-# SESSION_COOKIE_DOMAIN = '.chinaxbpenlyh.com' if not LOCAL_FLAG else '.a.com'
+# SESSION_COOKIE_DOMAIN = '.x.xcqifu.com' if not LOCAL_FLAG else '.a.com'
 SESSION_COOKIE_NAME = 'sessionid_qfpay'
 
 import logging

@@ -18,11 +18,11 @@ import sys
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../'))])
 
-SERVER_NAME = 'LYH_WEB0' if not LOCAL_FLAG else 'DEVELOPER'
-SERVER_DOMAIN = 'chinaxbpenlyh.com' if not LOCAL_FLAG else '192.168.0.199:8002'
-MAIN_DOMAIN = ('http://www.%s' % SERVER_DOMAIN) if not LOCAL_FLAG else ('http://%s' % SERVER_DOMAIN)
+SERVER_NAME = 'qfpay_WEB0' if not LOCAL_FLAG else 'DEVELOPER'
+SERVER_DOMAIN = 'x.xcqifu.com' if not LOCAL_FLAG else '192.168.0.199:8002'
+MAIN_DOMAIN = ('http://%s' % SERVER_DOMAIN) if not LOCAL_FLAG else ('http://%s' % SERVER_DOMAIN)
 
-# IMG0_DOMAIN = 'http://img0.chinaxbpenlyh.com'
+# IMG0_DOMAIN = 'http://img0.x.xcqifu.com'
 IMG0_DOMAIN = 'http://ogkm9l47l.bkt.clouddn.com'
 
 EMAIL_FROM = u'"钱方统计" <service@3-10.cc>'
@@ -69,7 +69,7 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 MEDIA_ROOT = os.path.abspath(os.path.join(SITE_ROOT, '../static'))
-MEDIA_URL = '/static/' if LOCAL_FLAG else ('http://static.%s/' % SERVER_DOMAIN)
+MEDIA_URL = '/static/' if LOCAL_FLAG else ('http://staticx.xcqifu.com/')
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
