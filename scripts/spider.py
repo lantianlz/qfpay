@@ -286,16 +286,21 @@ class Spider(object):
 if __name__ == "__main__":
     print u"开始搞事情......"
     from www.misc import account
+    import sys
     
-    for per in account.ACCOUNTS[:1]:
+    channel_id = sys.argv[1]
 
-        spider = Spider(per['CHANNEL_ID'], per['USERNAME'], per['PASSWORD']) 
-        spider.login()
-        spider.sync_shop()
+    for per in account.ACCOUNTS:
+        
+        if str(per['CHANNEL_ID']) == channel_id:
 
-        for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
-            print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
-            spider.sync_order(shop.shop_id)
+            spider = Spider(per['CHANNEL_ID'], per['USERNAME'], per['PASSWORD']) 
+            spider.login()
+            spider.sync_shop()
+
+            for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
+                print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
+                spider.sync_order(shop.shop_id)
 
 
 
