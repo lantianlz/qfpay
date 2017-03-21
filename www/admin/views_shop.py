@@ -15,6 +15,23 @@ from misc.decorators import staff_required, common_ajax_response, verify_permiss
 from www.admin.interface import ShopBase, UserToChannelBase
 
 def order_list(request, template_name='pc/admin/order_list.html'):
+
+    shop_id = request.REQUEST.get('shop_id')
+
+    shop = ShopBase('').get_shop_by_id(shop_id)
+
+    today = datetime.datetime.now()
+    tomorrow = (today + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    today = today.strftime('%Y-%m-%d')
+
+    start_date = request.POST.get('start_date')
+    start_date = start_date if start_date else (today + ' 00:00')
+    end_date = request.POST.get('end_date')
+    end_date = end_date if end_date else (tomorrow + ' 00:00')
+
+    orders = ShopBase(shop.channel_id).get_order_list(start_date, end_date, None, shop_id).values()
+    total = sum([x['price'] for x in orders])
+    order_count = len(orders)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 @member_required

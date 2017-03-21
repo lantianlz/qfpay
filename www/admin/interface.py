@@ -265,6 +265,9 @@ class ShopBase(object):
 
 class UserToChannelBase(object):
 
+    '''
+    获取用户可看渠道商
+    '''
     def get_channels_of_user(self, user_id):
         from www.misc.account import ACCOUNTS
 

@@ -65,6 +65,9 @@ class Shop(models.Model):
         ordering = ["-pass_date"]
 
     def is_inactive(self):
+        '''
+        是否非活跃
+        '''
         return (datetime.datetime.now() - self.latest_order_date).days >= 3
 
 
