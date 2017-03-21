@@ -296,11 +296,11 @@ if __name__ == "__main__":
 
             spider = Spider(per['CHANNEL_ID'], per['USERNAME'], per['PASSWORD']) 
             spider.login()
-            spider.sync_shop()
+            # spider.sync_shop()
 
-            for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
-                print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
-                spider.sync_order(shop.shop_id)
+            # for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
+            #     print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
+            #     spider.sync_order(shop.shop_id)
 
 
 
