@@ -64,9 +64,15 @@ class Spider(object):
         # 登陆
         payload = {"username": self.USERNAME, "password": self.PASSWORD, "captcha": captcha, "captchakey": captcha_key}
         req = self.session.post(url=self.LOGIG_URL, data=payload, headers={"User-Agent": self.USER_AGENT, "Referer": self.LOGIG_URL})
-        print u"登陆成功！"
-        print ''
-        time.sleep(self.SLEEP_TIME)
+        if req.text.find(u'验证码错误') > -1:
+            print u'验证码错误'
+            return False
+        else:
+            print u"登陆成功！"
+            print ''
+            time.sleep(self.SLEEP_TIME)
+            return True
+
 
     def sync_shop(self):
         '''
@@ -295,12 +301,12 @@ if __name__ == "__main__":
         if str(per['CHANNEL_ID']) == channel_id:
 
             spider = Spider(per['CHANNEL_ID'], per['USERNAME'], per['PASSWORD']) 
-            spider.login()
-            # spider.sync_shop()
+            if spider.login():
+                spider.sync_shop()
 
-            # for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
-            #     print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
-            #     spider.sync_order(shop.shop_id)
+                for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
+                    print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
+                    spider.sync_order(shop.shop_id)
 
 
 
