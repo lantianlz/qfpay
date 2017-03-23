@@ -71,7 +71,7 @@ class Shop(models.Model):
         if self.latest_order_date:
             return (datetime.datetime.now() - self.latest_order_date).days >= 3
         else:
-            return False
+            return True
 
 
 class Order(models.Model):
