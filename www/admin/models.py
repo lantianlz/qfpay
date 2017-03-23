@@ -68,7 +68,10 @@ class Shop(models.Model):
         '''
         是否非活跃
         '''
-        return (datetime.datetime.now() - self.latest_order_date).days >= 3
+        if self.latest_order_date:
+            return (datetime.datetime.now() - self.latest_order_date).days >= 3
+        else:
+            return False
 
 
 class Order(models.Model):
