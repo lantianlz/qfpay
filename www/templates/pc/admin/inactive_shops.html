@@ -1,9 +1,60 @@
 {% extends "pc/admin/home.html" %}
 {% block title %}流失风险统计{% endblock title %}
 
+{% block css %}
+<style type="text/css">
+.tips{
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    border-left: 4px solid #c23531;
+    background-color: #f1f1f1;
+}
+#split {
+    display: none;
+}
+#split td{
+    padding: 20px;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 1px;
+    /*display: none;*/
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/countUp.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var allShopsCount = $('table tr').length - 1,
+        inactiveShops = $('table tr.co-c23531'),
+        inactiveShopsCount = inactiveShops.length,
+        inactiveRate = inactiveShopsCount == 0 ? 0 : $.Global.Utils.formatPrice(inactiveShopsCount/allShopsCount*100);
+    
+    if(inactiveShopsCount > 0){
+        var lastInactiveShop = inactiveShops.eq(inactiveShops.length - 1);
+    
+        $('#split').insertAfter(lastInactiveShop);
+        $('#split').show();
+    }
+
+    $('#inactive-rate').text(inactiveRate);
+    // new countUp("inactive-rate", 0, inactiveRate, 1, 1).start();
+});
+</script>
+{% endblock %}
+
 {% block admin_main %}
 <div class="row pt-70">
-    <div class="col-md-12">
+    <div class="col-md-12 pt-20">
+        <div class="col-md-12 tips pt-10">
+            <div class="col-md-12 f18 fb">
+                商户流失率为<span class="co-c23531 f25 pr-5 pl-5" id="inactive-rate">0</span>%
+            </div>
+            <div class="col-md-12 f16 pt-10 pb-10 fi co-95989d">维护一个已有客户的成本远低于新开一个商户，请合理安排回访</div>
+        </div>
+    </div>
+    <div class="col-md-12 pt-20">
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -16,6 +67,7 @@
                 </tr>
             </thead>
             <tbody>
+                <tr id="split"><td colspan="6" class="fb f16">以上商户三天未产生交易，请安排跟进</td></tr>
                 {% for shop in shops %}
                 <tr {% if shop.is_inactive %}class="co-c23531 fb fi"{% endif %}>
                     <td>{{ forloop.counter }}</td>

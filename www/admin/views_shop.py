@@ -152,7 +152,7 @@ def get_shop_sort(request):
         })
         active_shops.append(x[0])
 
-    for x in shop_base.get_all_shop():
+    for x in shop_base.get_shops():
         if x.shop_id not in active_shops:
             data.append({
                 'shop_id': x.shop_id,
@@ -260,6 +260,7 @@ def get_order_list(request):
             'num': num,
             'name': dict_shop_info[x.shop_id]['name'],
             'order_no': x.order_no,
+            'card_no': x.card_no,
             'order_date': str(x.order_date),
             'price': str(x.price),
             'type': x.type,
@@ -338,11 +339,12 @@ def get_salesman_statistics_data(request):
         all_percentage_price += _profit_after_tax * _percentage
 
     ydata.sort(key=lambda k: k['value'], reverse=True)
+    xdata = [x['name'] for x in ydata]
     data.sort(key=lambda k: k['total'], reverse=True)
 
     return HttpResponse(
         json.dumps({
-            'xdata': xdata, 'ydata': ydata, 'data': data,
+            'xdata': xdata[:10], 'ydata': ydata[:10], 'data': data,
             'all_total': all_total,
             'all_profit': all_profit,
             'all_percentage_price': all_percentage_price
@@ -391,6 +393,7 @@ def get_timesharing_detail_data(request):
 
     date = request.REQUEST.get('date')
     hour = request.REQUEST.get('hour')
+    hour = hour or '00'
 
     for x in shop_base.get_timesharing_detail_group_by_shop_id(date, hour):
         data.append({
