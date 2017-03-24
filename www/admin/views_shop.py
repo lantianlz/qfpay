@@ -512,9 +512,12 @@ def get_encouragement_data(request):
         all_pay_count += data[key]['pay_count']
         all_pay_total += data[key]['pay_total']
 
+    data = data.values()
+    data.sort(key=lambda x: x['encouragement'], reverse=True)
+
     return HttpResponse(
         json.dumps({
-            'data': data.values(),
+            'data': data,
             'all_pay_count': all_pay_count,
             'all_pay_total': all_pay_total,
             'total_encouragement': total_encouragement
