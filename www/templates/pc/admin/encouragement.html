@@ -36,7 +36,7 @@ $(document).ready(function(){
                     '<% _.map(records, function(record, i){ %>',
                     '<tr>',
                         '<td><%= i+1 %></td>',
-                        '<td><%= record.name %></td>',
+                        '<td><a href="/admin/per_shop/<%= record.shop_id %>" target="_blank"><%= record.name %></td></a>',
                         '<td><%= record.tel %></td>',
                         '<td><%= record.pass_date %></td>',
                         '<td><%= record.wx_pay_count %></td>',
@@ -45,7 +45,7 @@ $(document).ready(function(){
                         '<td><%= $.Global.Utils.formatPrice(record.alipay_pay_total) %></td>',
                         '<td><%= record.pay_count %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.pay_total) %></td>',
-                        '<td><%= record.encouragement %></td>',
+                        '<td class="co-4091fc"><%= record.encouragement %></td>',
                     '</tr>',
                     '<% }) %>'
                 ].join(''));

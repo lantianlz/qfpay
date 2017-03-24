@@ -486,6 +486,7 @@ def get_encouragement_data(request):
         key = x[3]
         if not data.has_key(key):
             data[key] = {
+                'shop_id': key,
                 'name': dict_shop_info[key]['name'],
                 'tel': dict_shop_info[key]['tel'],
                 'pass_date': dict_shop_info[key]['pass_date'],
