@@ -316,9 +316,13 @@ def get_salesman_statistics_data(request):
     all_profit = 0
     all_percentage_price = 0
     for k in dict_salesman_2_shop.keys():
+        # 交易金额
         _total = float(dict_salesman_2_shop[k][0])
-        _profit = float(dict_salesman_2_shop[k][1])
+        # 交易利润，排除掉 业务员刷卡的
+        _profit = float(dict_salesman_2_shop[k][1]) if k != u'渠道录入' else 0
+        # 提成比例
         _percentage = float(dict_salesman_2_percentage.get(k, 0))
+        # 税后利润
         _profit_after_tax = _profit/1.03
 
         if _total <= 0:
@@ -327,7 +331,7 @@ def get_salesman_statistics_data(request):
         xdata.append(k)
         ydata.append({'name': k, 'value': _total})
         data.append({
-            'name': k, 
+            'name': k,
             'total': _total,
             'profit': _profit,
             'profit_after_tax': _profit_after_tax,
