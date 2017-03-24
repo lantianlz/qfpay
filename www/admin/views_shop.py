@@ -131,8 +131,13 @@ def _get_shop_info(channel_id):
 
     # 商户与归属人对照
     dict_shop_info = {}
-    for x in shop_base.get_all_shop().values('shop_id', 'owner', 'name', 'tel'):
-        dict_shop_info[x['shop_id']] = {'owner': x['owner'], 'name': x['name'], 'tel': x['tel']}
+    for x in shop_base.get_all_shop().values('shop_id', 'owner', 'name', 'tel', 'pass_date'):
+        dict_shop_info[x['shop_id']] = {
+            'owner': x['owner'], 
+            'name': x['name'], 
+            'tel': x['tel'],
+            'pass_date': str(x['pass_date'])[:10]
+        }
 
     return dict_shop_info
 
@@ -483,6 +488,7 @@ def get_encouragement_data(request):
             data[key] = {
                 'name': dict_shop_info[key]['name'],
                 'tel': dict_shop_info[key]['tel'],
+                'pass_date': dict_shop_info[key]['pass_date'],
                 'wx_pay_count': 0,
                 'wx_pay_total': 0,
                 'alipay_pay_count': 0,

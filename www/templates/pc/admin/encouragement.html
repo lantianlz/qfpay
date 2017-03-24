@@ -38,6 +38,7 @@ $(document).ready(function(){
                         '<td><%= i+1 %></td>',
                         '<td><%= record.name %></td>',
                         '<td><%= record.tel %></td>',
+                        '<td><%= record.pass_date %></td>',
                         '<td><%= record.wx_pay_count %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.wx_pay_total) %></td>',
                         '<td><%= record.alipay_pay_count %></td>',
@@ -48,7 +49,7 @@ $(document).ready(function(){
                     '</tr>',
                     '<% }) %>'
                 ].join(''));
-                $('table tbody').html(listTemplate({'records': data.data}));
+                $('.table-encouragement tbody').html(listTemplate({'records': data.data}));
 
                 $('.all_pay_count').text(data.all_pay_count);
                 $('.all_pay_total').text($.Global.Utils.formatPrice(data.all_pay_total));
@@ -84,12 +85,13 @@ $(document).ready(function(){
         </form>
     </div>
     <div class="col-md-12 pt-10">
-        <table class="table table-hover">
+        <table class="table table-hover table-encouragement">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>商户名称</th>
                     <th>手机号</th>
+                    <th>通过日期</th>
                     <th>微信交易笔数</th>
                     <th>微信交易金额</th>
                     <th>支付宝交易笔数</th>
