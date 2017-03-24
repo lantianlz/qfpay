@@ -1,0 +1,112 @@
+{% extends "pc/admin/home.html" %}
+{% block title %}激励统计{% endblock title %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    var search = function(){
+        ajaxSend(
+            "/admin/encouragement/get_encouragement_data", 
+            {
+                'start_date': $('#start_date_search').val(), 
+                'end_date': $('#end_date_search').val()
+            },
+            function(data){
+                
+                var listTemplate = _.template([
+                    '<% _.map(records, function(record, i){ %>',
+                    '<tr>',
+                        '<td><%= i+1 %></td>',
+                        '<td><%= record.name %></td>',
+                        '<td><%= record.tel %></td>',
+                        '<td><%= record.wx_pay_count %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.wx_pay_total) %></td>',
+                        '<td><%= record.alipay_pay_count %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.alipay_pay_total) %></td>',
+                        '<td><%= record.pay_count %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.pay_total) %></td>',
+                        '<td><%= record.encouragement %></td>',
+                    '</tr>',
+                    '<% }) %>'
+                ].join(''));
+                $('table tbody').html(listTemplate({'records': data.data}));
+
+                $('.all_pay_count').text(data.all_pay_count);
+                $('.all_pay_total').text($.Global.Utils.formatPrice(data.all_pay_total));
+                $('.total_encouragement').text($.Global.Utils.formatPrice(data.total_encouragement));
+            }
+        );
+    };
+
+    $('.search').on('click', function(){
+        search();
+    });
+
+    $('.search').click();
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-70">
+    <div class="col-md-12 pt-20">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12 pt-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>商户名称</th>
+                    <th>手机号</th>
+                    <th>微信交易笔数</th>
+                    <th>微信交易金额</th>
+                    <th>支付宝交易笔数</th>
+                    <th>支付宝交易金额</th>
+                    <th>总交易笔数</th>
+                    <th>总交易金额</th>
+                    <th>激励金额</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-12 pb-20 text-right">
+        此时间段，总交易 <span class="co-4091fc fb f16 all_pay_count">0</span> 笔，
+        总交易金额 <span class="co-4091fc fb f16 all_pay_total">0</span> 元，
+        总激励金额 <span class="co-4091fc fb f16 total_encouragement">0</span> 元
+    </div>
+</div>
+{% endblock %}

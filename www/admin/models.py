@@ -82,6 +82,7 @@ class Order(models.Model):
     card_no = models.CharField(verbose_name=u'交易卡号', max_length=64, null=True)
     price = models.DecimalField(verbose_name=u"交易金额", max_digits=10, decimal_places=2, null=True, db_index=True)
     type = models.CharField(verbose_name=u'交易类型', max_length=64, null=True)
+    pay_type = models.IntegerField(verbose_name=u'支付类型', db_index=True, null=True)
     state = models.CharField(verbose_name=u'交易状态', max_length=64, null=True)
     rate = models.DecimalField(verbose_name=u"费率", max_digits=8, decimal_places=4, default=0.0038, null=True)
     channel_id = models.IntegerField(verbose_name=u'渠道id', db_index=True, null=True)

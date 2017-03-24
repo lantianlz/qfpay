@@ -91,7 +91,8 @@ $(document).ready(function(){
             "/admin/shop/get_shop_sort", 
             {
                 'start_date': $('#start_date_search').val(), 
-                'end_date': $('#end_date_search').val()
+                'end_date': $('#end_date_search').val(),
+                'salesman': "{{ salesman }}"
             },
             function(data){
                 // 统计信息
@@ -139,7 +140,8 @@ $(document).ready(function(){
             {
                 'start_date': $('#start_date_search').val(), 
                 'end_date': $('#end_date_search').val(), 
-                'over_ten': $('.over-ten').attr("checked") == "checked"
+                'over_ten': $('.over-ten').attr("checked") == "checked",
+                'salesman': "{{ salesman }}"
             },
             function(data){
 
@@ -297,6 +299,7 @@ $(document).ready(function(){
                     'start_date': startDate, 
                     'end_date': endDate, 
                     'price_sort': priceSort||false,
+                    'salesman': "{{ salesman }}",
                     'page_index': pageIndex||1
                 },
                 function(data){

@@ -101,6 +101,9 @@ class ShopBase(object):
         '''
         condition = " AND a.channel_id = %s " % self.channel_id
 
+        # if salesman:
+        #     condition += " AND a.owner = '%s' " % salesman
+
         sql = """
             SELECT a.shop_id, a.name, COUNT(a.shop_id), SUM(b.price) AS total
             FROM admin_shop a, admin_order b 
@@ -261,6 +264,26 @@ class ShopBase(object):
         """
 
         return raw_sql.exec_sql(sql, [date+' '+hour+':00:00', date+' '+hour+':59:59'])
+
+    def get_encouragement_detail_group_by_pay_type(self, start_date, end_date):
+        '''
+        按支付方式 获取交易金额分组
+        '''
+        condition = " AND b.channel_id = %s " % self.channel_id
+
+        sql = u"""
+            SELECT COUNT(b.order_no), SUM(b.price), b.pay_type, b.shop_id
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND b.price >= 10
+            AND a.shop_id = b.shop_id
+            AND a.owner != '渠道录入'
+            AND %s <= a.pass_date and a.pass_date <= %s
+        """ + condition + """
+            GROUP BY b.shop_id, b.pay_type
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date, start_date, end_date])
 
 
 class UserToChannelBase(object):

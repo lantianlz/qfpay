@@ -36,7 +36,9 @@ def order_list(request, template_name='pc/admin/order_list.html'):
 
 @member_required
 def choose_channel(request, template_name='pc/admin/choose_channel.html'):
-
+    '''
+    渠道选择
+    '''
     channels = UserToChannelBase().get_channels_of_user(request.user.id)
 
     channel_id = request.GET.get('channel')
@@ -50,14 +52,21 @@ def choose_channel(request, template_name='pc/admin/choose_channel.html'):
 @member_required
 @channel_required
 def shop(request, template_name='pc/admin/shop.html'):
+    '''
+    商户统计
+    '''
     today = datetime.datetime.now()
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
+    salesman = request.REQUEST.get('salesman')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 @member_required
 @channel_required
 def per_shop(request, shop_id, template_name='pc/admin/per_shop.html'):
+    '''
+    单店统计
+    '''
     shop = ShopBase(request.session['CHANNEL_ID']).get_shop_by_id(shop_id)
     today = datetime.datetime.now()
 
@@ -71,6 +80,9 @@ def per_shop(request, shop_id, template_name='pc/admin/per_shop.html'):
 @member_required
 @channel_required
 def salesman(request, template_name='pc/admin/salesman.html'):
+    '''
+    业务员统计
+    '''
     today = datetime.datetime.now()
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
@@ -79,6 +91,9 @@ def salesman(request, template_name='pc/admin/salesman.html'):
 @member_required
 @channel_required
 def inactive_shops(request, template_name='pc/admin/inactive_shops.html'):
+    '''
+    风险流失统计
+    '''
 
     shops = ShopBase(request.session['CHANNEL_ID']).get_shops().order_by('latest_order_date')
 
@@ -87,6 +102,9 @@ def inactive_shops(request, template_name='pc/admin/inactive_shops.html'):
 @member_required
 @channel_required
 def timesharing(request, template_name="pc/admin/timesharing.html"):
+    '''
+    分时统计
+    '''
     date = request.GET.get('date', datetime.datetime.now().strftime('%Y-%m-%d'))
     shop_id = request.GET.get('shop_id')
     if shop_id:
@@ -94,13 +112,27 @@ def timesharing(request, template_name="pc/admin/timesharing.html"):
         
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@member_required
+@channel_required
+def encouragement(request, template_name="pc/admin/encouragement.html"):
+    '''
+    激励统计
+    '''
+    today = datetime.datetime.now()
+    start_date = today.replace(day=1).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+
+
 def _get_shop_info(channel_id):
     shop_base = ShopBase(channel_id)
 
     # 商户与归属人对照
     dict_shop_info = {}
-    for x in shop_base.get_all_shop().values('shop_id', 'owner', 'name'):
-        dict_shop_info[x['shop_id']] = {'owner': x['owner'], 'name': x['name']}
+    for x in shop_base.get_all_shop().values('shop_id', 'owner', 'name', 'tel'):
+        dict_shop_info[x['shop_id']] = {'owner': x['owner'], 'name': x['name'], 'tel': x['tel']}
 
     return dict_shop_info
 
@@ -115,6 +147,9 @@ def get_shop_sort(request):
     average_order_price = 0
     active_shops = []
     data = []
+
+    # 销售员
+    salesman = request.REQUEST.get('salesman')
 
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
@@ -194,6 +229,8 @@ def get_order_statistic_data(request):
     all_order_price = 0
     average_order_price = 0
 
+    # 销售员
+    salesman = request.REQUEST.get('salesman')
     over_ten = request.POST.get('over_ten', 'false')
     over_ten = False if over_ten == 'false' else True
     shop_id = request.POST.get('shop_id')
@@ -414,5 +451,75 @@ def get_timesharing_detail_data(request):
     )
 
 
+def _get_encouragement(per_count):
+    if 20 <= per_count and per_count < 40:
+        return 20
+    elif 40 <= per_count and per_count < 60:
+        return 50
+    elif 60 <= per_count:
+        return 120
+    else:
+        return 0
+
+
+def get_encouragement_data(request):
+    total_encouragement = 0
+    all_pay_count = 0
+    all_pay_total = 0
+    data = {}
+
+    shop_base = ShopBase(request.session['CHANNEL_ID'])
+
+    start_date = request.REQUEST.get('start_date')
+    end_date = request.REQUEST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+
+    # 商户信息字典
+    dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
+
+    for x in shop_base.get_encouragement_detail_group_by_pay_type(start_date, end_date):
+        key = x[3]
+        if not data.has_key(key):
+            data[key] = {
+                'name': dict_shop_info[key]['name'],
+                'tel': dict_shop_info[key]['tel'],
+                'wx_pay_count': 0,
+                'wx_pay_total': 0,
+                'alipay_pay_count': 0,
+                'alipay_pay_total': 0,
+                'pay_count': 0,
+                'pay_total': 0,
+                'encouragement': 0
+            }
+
+        _count = x[0]
+        _total = float(x[1])
+
+        # 微信
+        if x[2] == 1:
+            data[key]['wx_pay_count'] += _count
+            data[key]['wx_pay_total'] += _total
+        else:
+            data[key]['alipay_pay_count'] += _count
+            data[key]['alipay_pay_total'] += _total
+
+        data[key]['pay_count'] += _count
+        data[key]['pay_total'] += _total
+
+    for key in data.keys():
+        data[key]['encouragement'] = _get_encouragement(data[key]['pay_count'])
+        total_encouragement += data[key]['encouragement']
+        all_pay_count += data[key]['pay_count']
+        all_pay_total += data[key]['pay_total']
+
+    return HttpResponse(
+        json.dumps({
+            'data': data.values(),
+            'all_pay_count': all_pay_count,
+            'all_pay_total': all_pay_total,
+            'total_encouragement': total_encouragement
+        }),
+        mimetype='application/json'
+    )
 
 

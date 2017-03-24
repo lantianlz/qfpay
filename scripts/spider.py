@@ -258,6 +258,7 @@ class Spider(object):
                     card_no = info['card_no'],
                     price = info['price'],
                     type = info['type'],
+                    pay_type = 1 if info['type'].find(u'微信') > -1 else 2,
                     state = info['state'],
                     rate = self.DICT_SHOP_2_RATE[shop_id] - decimal.Decimal(0.0022),
                     channel_id = self.CHANNEL_ID

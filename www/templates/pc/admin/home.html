@@ -82,6 +82,9 @@ $(document).ready(function(){
                 <li {% if 'inactive_shops' in request.path %} class="active" {% endif %}>
                     <a href="/admin/inactive_shops"><i class="fa fa-line-chart pr-10 f16"></i>流失风险统计</a>
                 </li>
+                <li {% if 'encouragement' in request.path %} class="active" {% endif %}>
+                    <a href="/admin/encouragement"><i class="fa fa-hand-grab-o pr-10 f16"></i>激励统计</a>
+                </li>
             </ul>
             <div class="user-info">
                 <div>
