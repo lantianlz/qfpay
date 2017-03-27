@@ -3,7 +3,11 @@
 
 {% block css %}
 <style type="text/css">
-
+.tips{
+    border: 1px solid #ddd;
+    border-left: 4px solid #4091fc;
+    background-color: #f1f1f1;
+}
 </style>
 {% endblock %}
 
@@ -49,17 +53,52 @@ $(document).ready(function(){
                     '</tr>',
                     '<% }) %>'
                 ].join(''));
-                $('.table-encouragement tbody').html(listTemplate({'records': data.data}));
+                $('#panel1 .table-encouragement tbody').html(listTemplate({'records': data.data}));
 
-                $('.all_pay_count').text(data.all_pay_count);
-                $('.all_pay_total').text($.Global.Utils.formatPrice(data.all_pay_total));
-                $('.total_encouragement').text($.Global.Utils.formatPrice(data.total_encouragement));
+                $('#panel1 .all_pay_count').text(data.all_pay_count);
+                $('#panel1 .all_pay_total').text($.Global.Utils.formatPrice(data.all_pay_total));
+                $('#panel1 .total_encouragement').text($.Global.Utils.formatPrice(data.total_encouragement));
+            }
+        );
+    },
+    search2 = function(){
+        ajaxSend(
+            "/admin/encouragement/get_encouragement_data_2", 
+            {
+                'start_date': $('#start_date_search').val(), 
+                'end_date': $('#end_date_search').val()
+            },
+            function(data){
+                
+                var listTemplate = _.template([
+                    '<% _.map(records, function(record, i){ %>',
+                    '<tr>',
+                        '<td><%= i+1 %></td>',
+                        '<td><a href="/admin/per_shop/<%= record.shop_id %>" target="_blank"><%= record.name %></td></a>',
+                        '<td><%= record.tel %></td>',
+                        '<td><%= record.pass_date %></td>',
+                        '<td><%= record.wx_pay_count %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.wx_pay_total) %></td>',
+                        '<td><%= record.alipay_pay_count %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.alipay_pay_total) %></td>',
+                        '<td><%= record.pay_count %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.pay_total) %></td>',
+                        '<td class="co-4091fc"><%= record.encouragement %></td>',
+                    '</tr>',
+                    '<% }) %>'
+                ].join(''));
+                $('#panel2 .table-encouragement tbody').html(listTemplate({'records': data.data}));
+
+                $('#panel2 .all_pay_count').text(data.all_pay_count);
+                $('#panel2 .all_pay_total').text($.Global.Utils.formatPrice(data.all_pay_total));
+                $('#panel2 .total_encouragement').text($.Global.Utils.formatPrice(data.total_encouragement));
             }
         );
     };
 
     $('.search').on('click', function(){
         search();
+        search2();
     });
 
     $('.search').click();
@@ -84,31 +123,79 @@ $(document).ready(function(){
             </div>
         </form>
     </div>
-    <div class="col-md-12 pt-10">
-        <table class="table table-hover table-encouragement">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>商户名称</th>
-                    <th>手机号</th>
-                    <th>通过日期</th>
-                    <th>微信交易笔数</th>
-                    <th>微信交易金额</th>
-                    <th>支付宝交易笔数</th>
-                    <th>支付宝交易金额</th>
-                    <th>总交易笔数</th>
-                    <th>总交易金额</th>
-                    <th>激励金额</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div class="col-md-12">
+        <ul class="nav nav-pills orange-nav-pills col-md-12 col-xs-12 f13">
+            <li class="active">
+                <a href="#panel1" data-toggle="pill">
+                    <i class="fa fa-list-ol pr-5"></i>
+                    <span class="hidden-xs">统计方式一</span>
+                </a>
+            </li>
+            <li>
+                <a href="#panel2" data-toggle="pill">
+                    <i class="fa fa-list pr-5"></i>
+                    <span class="hidden-xs">统计方式二</span>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content col-md-12 pl-0 pr-0">
+            <div class="col-md-12 pl-0 pr-0 tab-pane fade pt-15 in active" id="panel1">
+                <div class="col-md-12 f16 pt-10 pb-10 fi tips">统计规则：指定时间段新注册商户在此时间段内的交易数据（金额 >= 10）</div>
+                <table class="col-md-12 mt-15 pl-0 pr-0 table table-hover table-encouragement pt-5">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>商户名称</th>
+                            <th>手机号</th>
+                            <th>通过日期</th>
+                            <th>微信交易笔数</th>
+                            <th>微信交易金额</th>
+                            <th>支付宝交易笔数</th>
+                            <th>支付宝交易金额</th>
+                            <th>总交易笔数</th>
+                            <th>总交易金额</th>
+                            <th>激励金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div class="col-md-12 pb-20 text-right">
+                    此时间段，总交易 <span class="co-4091fc fb f16 all_pay_count">0</span> 笔，
+                    总交易金额 <span class="co-4091fc fb f16 all_pay_total">0</span> 元，
+                    总激励金额 <span class="co-4091fc fb f16 total_encouragement">0</span> 元
+                </div>
+            </div>
+
+            <div class="col-md-12 pl-0 pr-0 tab-pane fade pt-15" id="panel2">
+                <div class="col-md-12 f16 pt-10 pb-10 fi tips">统计规则：指定时间段新注册商户在注册日期<i class="fb co-4091fc pl-5 pr-5">30</i>天后的交易数据（金额 >= 10）</div>
+                <table class="col-md-12 pl-0 pr-0 mt-15 table table-hover table-encouragement">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>商户名称</th>
+                            <th>手机号</th>
+                            <th>通过日期</th>
+                            <th>微信交易笔数</th>
+                            <th>微信交易金额</th>
+                            <th>支付宝交易笔数</th>
+                            <th>支付宝交易金额</th>
+                            <th>总交易笔数</th>
+                            <th>总交易金额</th>
+                            <th>激励金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div class="col-md-12 pb-20 text-right">
+                    此时间段，总交易 <span class="co-4091fc fb f16 all_pay_count">0</span> 笔，
+                    总交易金额 <span class="co-4091fc fb f16 all_pay_total">0</span> 元，
+                    总激励金额 <span class="co-4091fc fb f16 total_encouragement">0</span> 元
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-12 pb-20 text-right">
-        此时间段，总交易 <span class="co-4091fc fb f16 all_pay_count">0</span> 笔，
-        总交易金额 <span class="co-4091fc fb f16 all_pay_total">0</span> 元，
-        总激励金额 <span class="co-4091fc fb f16 total_encouragement">0</span> 元
-    </div>
+    
 </div>
 {% endblock %}

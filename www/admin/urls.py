@@ -8,6 +8,7 @@ urlpatterns = patterns('www.admin.views',
                        )
 
 urlpatterns += patterns('www.admin.views_shop',
+      url(r'^encouragement/get_encouragement_data_2$', 'get_encouragement_data_2'), 
       url(r'^encouragement/get_encouragement_data$', 'get_encouragement_data'), 
       url(r'^encouragement$', 'encouragement'), 
 

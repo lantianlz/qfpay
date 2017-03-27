@@ -457,6 +457,9 @@ def get_timesharing_detail_data(request):
 
 
 def _get_encouragement(per_count):
+    '''
+    激励金额规则
+    '''
     if 20 <= per_count and per_count < 40:
         return 20
     elif 40 <= per_count and per_count < 60:
@@ -465,9 +468,10 @@ def _get_encouragement(per_count):
         return 120
     else:
         return 0
-
-
 def get_encouragement_data(request):
+    '''
+    统计激励金 按钱方规则
+    '''
     total_encouragement = 0
     all_pay_count = 0
     all_pay_total = 0
@@ -531,5 +535,103 @@ def get_encouragement_data(request):
         }),
         mimetype='application/json'
     )
+
+
+def get_encouragement_data_2(request):
+    '''
+    统计激励金 按新规则
+    '''
+    total_encouragement = 0
+    all_pay_count = 0
+    all_pay_total = 0
+    data = {}
+
+    shop_base = ShopBase(request.session['CHANNEL_ID'])
+
+    start_date = request.REQUEST.get('start_date')
+    end_date = request.REQUEST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+
+    # 商户信息字典
+    dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
+
+    for x in shop_base.get_shops_by_pass_date(start_date, end_date):
+        if x.owner == u'渠道录入':
+            continue
+        # 获取该店通过日期之后 30 天内交易数据
+        for y in shop_base.get_encouragement_detail_group_by_pay_type_of_shop(
+            (x.pass_date).strftime('%Y-%m-%d'), 
+            (x.pass_date + datetime.timedelta(days=30)).strftime('%Y-%m-%d'), 
+            x.shop_id
+        ):
+            key = x.shop_id
+            if not data.has_key(key):
+                data[key] = {
+                    'shop_id': key,
+                    'name': dict_shop_info[key]['name'],
+                    'tel': dict_shop_info[key]['tel'],
+                    'pass_date': dict_shop_info[key]['pass_date'],
+                    'wx_pay_count': 0,
+                    'wx_pay_total': 0,
+                    'alipay_pay_count': 0,
+                    'alipay_pay_total': 0,
+                    'pay_count': 0,
+                    'pay_total': 0,
+                    'encouragement': 0
+                }
+
+            _count = y[0]
+            _total = float(y[1])
+
+            # 微信
+            if y[2] == 1:
+                data[key]['wx_pay_count'] += _count
+                data[key]['wx_pay_total'] += _total
+            else:
+                data[key]['alipay_pay_count'] += _count
+                data[key]['alipay_pay_total'] += _total
+
+            data[key]['pay_count'] += _count
+            data[key]['pay_total'] += _total
+
+    for key in data.keys():
+        data[key]['encouragement'] = _get_encouragement(data[key]['pay_count'])
+        total_encouragement += data[key]['encouragement']
+        all_pay_count += data[key]['pay_count']
+        all_pay_total += data[key]['pay_total']
+
+    data = data.values()
+    data.sort(key=lambda x: x['encouragement'], reverse=True)
+
+    return HttpResponse(
+        json.dumps({
+            'data': data,
+            'all_pay_count': all_pay_count,
+            'all_pay_total': all_pay_total,
+            'total_encouragement': total_encouragement
+        }),
+        mimetype='application/json'
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

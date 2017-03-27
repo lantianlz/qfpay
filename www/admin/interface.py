@@ -285,6 +285,35 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date, start_date, end_date])
 
+    def get_shops_by_pass_date(self, start_date, end_date):
+        '''
+        '''
+
+        return Shop.objects.filter(
+            channel_id=self.channel_id, 
+            pass_date__range=(start_date, end_date)
+        )
+
+    def get_encouragement_detail_group_by_pay_type_of_shop(self, start_date, end_date, shop_id):
+        '''
+        按支付方式 获取交易金额分组
+        '''
+        condition = " AND channel_id = %s " % self.channel_id
+
+        if shop_id:
+            condition += " AND shop_id = %s " % shop_id
+
+        sql = u"""
+            SELECT COUNT(order_no), SUM(price), pay_type, shop_id
+            FROM admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND b.price >= 10
+        """ + condition + """
+            GROUP BY shop_id, pay_type
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
 
 class UserToChannelBase(object):
 
