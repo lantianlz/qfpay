@@ -34,10 +34,12 @@ class Spider(object):
     # 流水列表
     ORDER_URL = u"https://qfpay.com/qudao/history/"
 
-    def __init__(self, channel_id, username, password):
+    def __init__(self, channel_id, username, password, cost, default_rate):
         self.CHANNEL_ID = channel_id
         self.USERNAME = username
         self.PASSWORD = password
+        self.COST = cost
+        self.DETAULT_RATE = default_rate
 
         self.session = requests.Session()
 
@@ -74,7 +76,7 @@ class Spider(object):
             return True
 
 
-    def sync_shop(self):
+    def sync_shop(self, init):
         '''
         同步商户
         '''
@@ -91,9 +93,10 @@ class Spider(object):
             infos, page_index = self._sync_shop_per_page(page_index, latest_shop_id)
             shop_infos += infos
 
-            count += 1
-            if count >= 4:
-                break
+            if not init:
+                count += 1
+                if count >= 4:
+                    break
 
         print u'获取商户列表完成，总共更新[ %s ]家商户。' % len(shop_infos)
         print ''
@@ -146,7 +149,7 @@ class Spider(object):
                 tel = info['tel'],
                 type = info['type'],
                 contact = info['contact'],
-                rate = 0.0038, # 默认0.38费率
+                rate = self.DETAULT_RATE, # 默认0.38费率
                 owner = info['owner'],
                 pass_date = info['pass_date'],
                 channel_id = self.CHANNEL_ID
@@ -260,7 +263,7 @@ class Spider(object):
                     type = info['type'],
                     pay_type = 1 if info['type'].find(u'微信') > -1 else 2,
                     state = info['state'],
-                    rate = self.DICT_SHOP_2_RATE[shop_id] - decimal.Decimal(0.0022),
+                    rate = self.DICT_SHOP_2_RATE[shop_id] - decimal.Decimal(self.COST),
                     channel_id = self.CHANNEL_ID
                 )
             except Exception, e:
@@ -295,19 +298,27 @@ if __name__ == "__main__":
     from www.misc import account
     import sys
     
+    # 渠道id
     channel_id = sys.argv[1]
+    # 是否初始化
+    init = True if sys.argv[2:] == ['init'] else False
 
     for per in account.ACCOUNTS:
         
         if str(per['CHANNEL_ID']) == channel_id:
 
-            spider = Spider(per['CHANNEL_ID'], per['USERNAME'], per['PASSWORD']) 
+            spider = Spider(per['CHANNEL_ID'], per['USERNAME'], per['PASSWORD'], 
+                per['COST'], per['DEFAULT_RATE']) 
+
             if spider.login():
-                spider.sync_shop()
+                spider.sync_shop(init)
 
                 for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
                     print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
-                    spider.sync_order(shop.shop_id)
+                    if init:
+                        spider.sync_order(shop.shop_id, '2015-01-01')
+                    else:
+                        spider.sync_order(shop.shop_id)
 
 
 
