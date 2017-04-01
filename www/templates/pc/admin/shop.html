@@ -280,7 +280,14 @@ $(document).ready(function(){
 
                 // 事件绑定
                 main.on('click', function(params){
-                    window.open('/admin/timesharing?date=' + params.name, '_blank')
+                    window.open(
+                        String.format(
+                            '/admin/timesharing?date={0}&salesman={1}',
+                            params.name,
+                            '{{ salesman }}'
+                        ),
+                        '_blank'
+                    );
                 });
 
             }
@@ -441,6 +448,11 @@ $(document).ready(function(){
             </div>
             <div class="input-group input-group-sm pb-10">
                 <button class="btn btn-info btn-sm search-week" type="button">查询当月</button>
+            </div>
+            <div class="input-group input-group-sm pb-10 text-right pa co-4091fc f20" style="right: 20px; top: 20px;">
+                {% if salesman %}
+                <i class="fa fa-user pr-5"></i>业务员：{{salesman}}
+                {% endif %}
             </div>
         </form>
     </div>

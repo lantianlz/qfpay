@@ -27,7 +27,8 @@ $(document).ready(function(){
             "/admin/timesharing/get_timesharing_statistics_data", 
             {
                 'date': $('#date_search').val(),
-                'shop_id': "{{ shop.shop_id }}"
+                'shop_id': "{{ shop.shop_id }}",
+                'salesman': "{{ salesman }}"
             },
             function(data){
                 
@@ -141,7 +142,8 @@ $(document).ready(function(){
             "/admin/timesharing/get_timesharing_detail_data", 
             {
                 'date': "{{ date }}",
-                'hour': hour
+                'hour': hour,
+                'salesman': "{{ salesman }}"
             },
             function(data){
                 var html = [

@@ -58,7 +58,7 @@ def shop(request, template_name='pc/admin/shop.html'):
     today = datetime.datetime.now()
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
-    salesman = request.REQUEST.get('salesman')
+    salesman = request.REQUEST.get('salesman', '')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 @member_required
@@ -107,6 +107,7 @@ def timesharing(request, template_name="pc/admin/timesharing.html"):
     '''
     date = request.GET.get('date', datetime.datetime.now().strftime('%Y-%m-%d'))
     shop_id = request.GET.get('shop_id')
+    salesman = request.GET.get('salesman')
     if shop_id:
         shop = ShopBase(request.session['CHANNEL_ID']).get_shop_by_id(shop_id)
         
@@ -154,7 +155,7 @@ def get_shop_sort(request):
     data = []
 
     # 销售员
-    salesman = request.REQUEST.get('salesman')
+    salesman = request.REQUEST.get('salesman', '')
 
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
@@ -163,7 +164,7 @@ def get_shop_sort(request):
     # 商户信息字典
     dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
 
-    result = shop_base.get_shop_sort(start_date, end_date)
+    result = shop_base.get_shop_sort(start_date, end_date, salesman)
     max_total = decimal.Decimal(result[0][3]) if len(result) > 0 else 0
 
     for x in result:
@@ -192,7 +193,7 @@ def get_shop_sort(request):
         })
         active_shops.append(x[0])
 
-    for x in shop_base.get_shops():
+    for x in shop_base.get_shops(salesman):
         if x.shop_id not in active_shops:
             data.append({
                 'shop_id': x.shop_id,
@@ -235,7 +236,7 @@ def get_order_statistic_data(request):
     average_order_price = 0
 
     # 销售员
-    salesman = request.REQUEST.get('salesman')
+    salesman = request.REQUEST.get('salesman', '')
     over_ten = request.POST.get('over_ten', 'false')
     over_ten = False if over_ten == 'false' else True
     shop_id = request.POST.get('shop_id')
@@ -243,8 +244,8 @@ def get_order_statistic_data(request):
     end_date = request.POST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
-    count_result = shop_base.get_order_count(start_date, end_date, over_ten, shop_id)
-    price_result = shop_base.get_order_price(start_date, end_date, over_ten, shop_id)
+    count_result = shop_base.get_order_count(start_date, end_date, over_ten, shop_id, salesman)
+    price_result = shop_base.get_order_price(start_date, end_date, over_ten, shop_id, salesman)
 
     for x in count_result:
         all_shop_count += 1
@@ -279,6 +280,7 @@ def get_order_list(request):
 
     data = []
 
+    salesman = request.REQUEST.get('salesman', '')
     price_sort = request.POST.get('price_sort', 'false')
     price_sort = False if price_sort == 'false' else True
     shop_id = request.POST.get('shop_id')
@@ -288,9 +290,9 @@ def get_order_list(request):
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
     # 商户信息字典
-    dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
+    # dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
 
-    objs = shop_base.get_order_list(start_date, end_date, price_sort, shop_id)
+    objs = shop_base.get_order_list(start_date, end_date, price_sort, shop_id, salesman)
 
     page_objs = page.Cpt(objs, count=15, page=page_index).info
 
@@ -300,13 +302,13 @@ def get_order_list(request):
 
         data.append({
             'num': num,
-            'name': dict_shop_info[x.shop_id]['name'],
-            'order_no': x.order_no,
-            'card_no': x.card_no,
-            'order_date': str(x.order_date),
-            'price': str(x.price),
-            'type': x.type,
-            'state': x.state
+            'name': x[0],
+            'order_no': x[1],
+            'card_no': x[2],
+            'order_date': str(x[3]),
+            'price': str(x[4]),
+            'type': x[5],
+            'state': x[6]
         })
 
 
@@ -403,7 +405,8 @@ def get_salesman_statistics_data(request):
 def get_timesharing_statistics_data(request):
 
     date = request.REQUEST.get('date')
-    shop_id = request.REQUEST.get('shop_id')
+    shop_id = request.REQUEST.get('shop_id', '')
+    salesman = request.REQUEST.get('salesman', '')
 
     xdata = []
     ydata = []
@@ -412,7 +415,7 @@ def get_timesharing_statistics_data(request):
     active_hours = 0
 
     timesharing_data = {}
-    for x in ShopBase(request.session['CHANNEL_ID']).get_timesharing(date, shop_id):
+    for x in ShopBase(request.session['CHANNEL_ID']).get_timesharing(date, shop_id, salesman):
         timesharing_data[int(x[0])] = x[1]
         all_total += x[1]
         active_hours += 1
@@ -439,9 +442,10 @@ def get_timesharing_detail_data(request):
 
     date = request.REQUEST.get('date')
     hour = request.REQUEST.get('hour')
+    salesman = request.REQUEST.get('salesman', '')
     hour = hour or '00'
 
-    for x in shop_base.get_timesharing_detail_group_by_shop_id(date, hour):
+    for x in shop_base.get_timesharing_detail_group_by_shop_id(date, hour, salesman):
         data.append({
             'shop_id': x[0],
             'name': shop_base.get_shop_by_id(x[0]).name,

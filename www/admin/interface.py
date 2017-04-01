@@ -95,14 +95,14 @@ class ShopBase(object):
         except Shop.DoesNotExist:
             return ""
 
-    def get_shop_sort(self, start_date, end_date):
+    def get_shop_sort(self, start_date, end_date, salesman=None):
         '''
         获取店铺排行
         '''
         condition = " AND a.channel_id = %s " % self.channel_id
 
-        # if salesman:
-        #     condition += " AND a.owner = '%s' " % salesman
+        if salesman:
+            condition += " AND a.owner = '%s' " % salesman
 
         sql = """
             SELECT a.shop_id, a.name, COUNT(a.shop_id), SUM(b.price) AS total
@@ -116,63 +116,79 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_order_count(self, start_date, end_date, over_ten=False, shop_id=None):
+    def get_order_count(self, start_date, end_date, over_ten=False, shop_id=None, salesman=None):
         '''
         按日期 获取商户交易笔数分组
         '''
-        condition = " AND channel_id = %s " % self.channel_id
+        condition = " AND b.channel_id = %s " % self.channel_id
 
         if over_ten:
-            condition += " AND price >= 10 "
+            condition += " AND b.price >= 10 "
         if shop_id:
-            condition += " AND shop_id = %s " % shop_id
+            condition += " AND b.shop_id = %s " % shop_id
+        if salesman:
+            condition += " AND a.owner = '%s' " % salesman
 
         sql = """
-            SELECT DATE_FORMAT(order_date, "%%Y-%%m-%%d"), COUNT(shop_id)
-            FROM admin_order
-            WHERE %s <= order_date AND order_date <= %s
+            SELECT DATE_FORMAT(b.order_date, "%%Y-%%m-%%d"), COUNT(b.shop_id)
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND a.shop_id = b.shop_id
         """ + condition + """
-            GROUP BY DATE_FORMAT(order_date, "%%Y-%%m-%%d")
+            GROUP BY DATE_FORMAT(b.order_date, "%%Y-%%m-%%d")
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_order_price(self, start_date, end_date, over_ten=False, shop_id=None):
+    def get_order_price(self, start_date, end_date, over_ten=False, shop_id=None, salesman=None):
         '''
         按日期 获取商户交易金额分组
         '''
 
-        condition = " AND channel_id = %s " % self.channel_id
+        condition = " AND b.channel_id = %s " % self.channel_id
 
         if over_ten:
-            condition += " AND price >= 10 "
+            condition += " AND b.price >= 10 "
         if shop_id:
-            condition += " AND shop_id = %s " % shop_id
+            condition += " AND b.shop_id = %s " % shop_id
+        if salesman:
+            condition += " AND a.owner = '%s' " % salesman
 
         sql = """
-            SELECT DATE_FORMAT(order_date, "%%Y-%%m-%%d"), SUM(price)
-            FROM admin_order
-            WHERE %s <= order_date AND order_date <= %s
+            SELECT DATE_FORMAT(b.order_date, "%%Y-%%m-%%d"), SUM(b.price)
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND a.shop_id = b.shop_id
         """ + condition + """
-            GROUP BY DATE_FORMAT(order_date, "%%Y-%%m-%%d")
+            GROUP BY DATE_FORMAT(b.order_date, "%%Y-%%m-%%d")
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_order_list(self, start_date, end_date, price_sort, shop_id):
+    def get_order_list(self, start_date, end_date, price_sort, shop_id, salesman=None):
         '''
         获取商户交易流水
         '''
-        objs = Order.objects.filter(
-            channel_id=self.channel_id, order_date__range=(start_date, end_date)
-        )
+        
+        condition = " AND b.channel_id = %s " % self.channel_id
 
         if shop_id:
-            objs = objs.filter(shop_id=shop_id)
+            condition += " AND b.shop_id = %s " % shop_id
+        if salesman:
+            condition += " AND a.owner = '%s' " % salesman
         if price_sort:
-            objs = objs.order_by('-price')
+            condition += " order by price desc"
+        else:
+            condition += " order by order_date desc"
 
-        return objs
+        sql = """
+            SELECT a.name, b.order_no, b.card_no, b.order_date, b.price, b.type, b.state
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND a.shop_id = b.shop_id
+        """ + condition
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
 
     def get_order_total_group_by_shop(self, start_date, end_date):
         '''
@@ -199,8 +215,13 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_shops(self):
-        return Shop.objects.filter(channel_id=self.channel_id).exclude(owner=u"渠道录入")
+    def get_shops(self, owner=None):
+        objs = Shop.objects.filter(channel_id=self.channel_id).exclude(owner=u"渠道录入")
+        
+        if owner:
+            objs = objs.filter(owner=owner)
+
+        return objs
 
     def get_all_shop(self):
         return Shop.objects.filter(channel_id=self.channel_id)
@@ -226,39 +247,46 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [temp_date.strftime('%Y-%m-%d') + ' 00:00:00 ', self.channel_id])
 
-    def get_timesharing(self, date, shop_id=None):
+    def get_timesharing(self, date, shop_id=None, salesman=None):
         '''
         按小时 获取商户交易金额分组
         '''
 
-        condition = " AND channel_id = %s " % self.channel_id
-
+        condition = " AND b.channel_id = %s " % self.channel_id
+        print date, shop_id, salesman
         if shop_id:
-            condition += " AND shop_id = %s " % shop_id
+            condition += " AND b.shop_id = %s " % shop_id
+        if salesman:
+            condition += " AND a.owner = '%s' " % salesman
 
         sql = """
-            SELECT DATE_FORMAT(order_date, "%%H"), SUM(price)
-            FROM admin_order
-            WHERE %s <= order_date AND order_date <= %s
+            SELECT DATE_FORMAT(b.order_date, "%%H"), SUM(b.price)
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND a.shop_id = b.shop_id
         """ + condition + """
-            GROUP BY DATE_FORMAT(order_date, "%%H")
+            GROUP BY DATE_FORMAT(b.order_date, "%%H")
         """
 
         return raw_sql.exec_sql(sql, [date + " 00:00:00 ", date + " 23:59:59 "])
 
 
-    def get_timesharing_detail_group_by_shop_id(self, date, hour):
+    def get_timesharing_detail_group_by_shop_id(self, date, hour, salesman=None):
         '''
         按商户 获取某一时间商户交易金额分组
         '''
-        condition = " AND channel_id = %s " % self.channel_id
+        condition = " AND b.channel_id = %s " % self.channel_id
+
+        if salesman:
+            condition += " AND a.owner = '%s' " % salesman
 
         sql = """
-            SELECT shop_id, SUM(price) AS total
-            FROM admin_order
-            WHERE %s <= order_date AND order_date <= %s
+            SELECT b.shop_id, SUM(b.price) AS total
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND a.shop_id = b.shop_id
         """ + condition + """
-            GROUP BY shop_id
+            GROUP BY b.shop_id
             ORDER BY total DESC
             LIMIT 0, 10
         """

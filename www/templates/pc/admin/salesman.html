@@ -87,7 +87,7 @@ $(document).ready(function(){
                     '<% _.each(records, function(record, num){ %>',
                     '<tr>',
                         '<td><%= num+1 %></td>',
-                        '<td><%= record.name %></td>',
+                        '<td><a href="/admin/shop?salesman=<%= record.name %>" target="_blank"><%= record.name %></a></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.profit) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.profit_after_tax) %></td>',

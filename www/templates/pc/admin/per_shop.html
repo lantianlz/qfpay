@@ -172,7 +172,15 @@ $(document).ready(function(){
 
                 // 事件绑定
                 main.on('click', function(params){
-                    window.open('/admin/timesharing?date=' + params.name + '&shop_id=' + {{shop.shop_id}}, '_blank')
+                    window.open(
+                        String.format(
+                            '/admin/timesharing?date={0}&shop_id={1}&salesman={2}',
+                            params.name,
+                            '{{ shop_id }}',
+                            '{{ salesman }}'
+                        ),
+                        '_blank'
+                    );
                 });
 
             }
