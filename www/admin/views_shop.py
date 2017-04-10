@@ -154,6 +154,9 @@ def get_shop_sort(request):
     active_shops = []
     data = []
 
+    # 按通过时间排序
+    pass_date_sort = request.REQUEST.get('pass_date_sort')
+    pass_date_sort = False if pass_date_sort == 'false' else True
     # 销售员
     salesman = request.REQUEST.get('salesman', '')
 
@@ -164,8 +167,9 @@ def get_shop_sort(request):
     # 商户信息字典
     dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
 
-    result = shop_base.get_shop_sort(start_date, end_date, salesman)
+    result = shop_base.get_shop_sort(start_date, end_date, pass_date_sort, salesman)
     max_total = decimal.Decimal(result[0][3]) if len(result) > 0 else 0
+    max_total = max([x[3] for x in result])
 
     for x in result:
 
@@ -189,7 +193,8 @@ def get_shop_sort(request):
             'total': str(x[3]),
             'average': round(x[3] / x[2], 2),
             'rate': round(total / max_total * 100, 1) if max_total != 0 else 0,
-            'owner': dict_shop_info[x[0]]['owner']
+            'owner': dict_shop_info[x[0]]['owner'],
+            'pass_date': str(x[4])[:10]
         })
         active_shops.append(x[0])
 
@@ -202,7 +207,8 @@ def get_shop_sort(request):
                 'total': 0,
                 'average': 0,
                 'rate': 0,
-                'owner': dict_shop_info[x.shop_id]['owner']
+                'owner': dict_shop_info[x.shop_id]['owner'],
+                'pass_date': str(x.pass_date)[:10]
             })
 
     average_order_count = (all_order_count / active_shop_count) if active_shop_count != 0 else 0
@@ -325,6 +331,12 @@ def get_salesman_statistics_data(request):
     end_date = request.REQUEST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
+    # 销售员对应商户数量
+    dict_salesman_2_shop_count = {}
+    for x in shop_base.get_shop_count_group_by_salesman(start_date, end_date):
+        if not dict_salesman_2_shop_count.has_key(x[1]):
+            dict_salesman_2_shop_count[x[1]] = x[0]
+
     # 商户金额字典
     dict_shop_2_total = {}
     for x in shop_base.get_order_total_group_by_shop(start_date, end_date):
@@ -376,6 +388,7 @@ def get_salesman_statistics_data(request):
         ydata.append({'name': k, 'value': _total})
         data.append({
             'name': k,
+            'shop_count': dict_salesman_2_shop_count.get(k, 0),
             'total': _total,
             'profit': _profit,
             'profit_after_tax': _profit_after_tax,

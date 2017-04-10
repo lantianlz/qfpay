@@ -88,6 +88,7 @@ $(document).ready(function(){
                     '<tr>',
                         '<td><%= num+1 %></td>',
                         '<td><a href="/admin/shop?salesman=<%= record.name %>" target="_blank"><%= record.name %></a></td>',
+                        '<td><%= record.shop_count %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.profit) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.profit_after_tax) %></td>',
@@ -144,6 +145,7 @@ $(document).ready(function(){
                 <tr>
                     <th>#</th>
                     <th>业务员</th>
+                    <th>商户数量</th>
                     <th>交易金额</th>
                     <th>交易利润</th>
                     <th>税后利润(3%)</th>

@@ -95,7 +95,7 @@ class ShopBase(object):
         except Shop.DoesNotExist:
             return ""
 
-    def get_shop_sort(self, start_date, end_date, salesman=None):
+    def get_shop_sort(self, start_date, end_date, pass_date_sort=False, salesman=None):
         '''
         获取店铺排行
         '''
@@ -104,14 +104,19 @@ class ShopBase(object):
         if salesman:
             condition += " AND a.owner = '%s' " % salesman
 
+        sort_str = 'total'
+        if pass_date_sort:
+            sort_str = 'pass_date'
+
         sql = """
-            SELECT a.shop_id, a.name, COUNT(a.shop_id), SUM(b.price) AS total
+            SELECT a.shop_id, a.name, COUNT(a.shop_id), SUM(b.price) AS total, pass_date
             FROM admin_shop a, admin_order b 
             WHERE %s <= b.order_date AND b.order_date <= %s
             AND a.shop_id = b.shop_id
         """ + condition + """
             GROUP BY a.shop_id
-            ORDER BY total DESC
+            ORDER BY 
+        """ + sort_str + """ DESC
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
@@ -341,6 +346,25 @@ class ShopBase(object):
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_shop_count_group_by_salesman(self, start_date, end_date):
+        '''
+        按销售人员分组获取店铺数量
+        '''
+        start_date = '2015-01-01'
+        end_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+        condition = " AND channel_id = %s " % self.channel_id
+
+        sql = u"""
+            SELECT count(owner), owner FROM admin_shop
+            WHERE %s <= pass_date AND pass_date <= %s
+        """ + condition + """
+            GROUP BY owner
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
 
 
 class UserToChannelBase(object):

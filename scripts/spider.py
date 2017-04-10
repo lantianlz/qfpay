@@ -316,7 +316,7 @@ if __name__ == "__main__":
                 for shop in Shop.objects.filter(state=1, channel_id=per['CHANNEL_ID']):
                     print u'---- [ %s - %s ] ----' % (per['USERNAME'], shop.name)
                     if init:
-                        spider.sync_order(shop.shop_id, '2015-01-01')
+                        spider.sync_order(shop.shop_id, '2017-01-01')
                     else:
                         spider.sync_order(shop.shop_id)
 

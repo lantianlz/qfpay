@@ -92,6 +92,7 @@ $(document).ready(function(){
             {
                 'start_date': $('#start_date_search').val(), 
                 'end_date': $('#end_date_search').val(),
+                'pass_date_sort': $('.pass-date-sort').attr("checked") == "checked",
                 'salesman': "{{ salesman }}"
             },
             function(data){
@@ -109,7 +110,7 @@ $(document).ready(function(){
                         '<div class="col-md-12 score-border">',
                             '<div class="info-container">',
                                 '<span class="num"><%= num+1 %></span>',
-                                '<a class="pl-30 shop-name" href="/admin/per_shop/<%= record.shop_id %>/?start_date=<%= $("#start_date_search").val() %>&end_date=<%= $("#end_date_search").val() %>" target="_blank" title="<%= record.name %>" data-toggle="tooltip" data-placement="top"><%= record.name %>( <%= record.owner %> )</a>',
+                                '<a class="pl-30 shop-name" href="/admin/per_shop/<%= record.shop_id %>/?start_date=<%= $("#start_date_search").val() %>&end_date=<%= $("#end_date_search").val() %>" target="_blank" title="[ <%= record.pass_date %> ] <%= record.name %>" data-toggle="tooltip" data-placement="top"><%= record.name %>( <%= record.owner %> )</a>',
                             '</div>',
                             '<div class="col-md-12 score" data-toggle="tooltip" data-placement="top" title="总交易 <%= record.count %> 笔，总金额 <%= record.total %> 元，平均每笔 <%= record.average %> 元"  data-rate="<%= record.rate>=9?record.rate:9 %>%">',
                                 '<span class="amount"><%= record.total %></span>',
@@ -421,6 +422,11 @@ $(document).ready(function(){
         $('#end_date_search').val($.Global.Utils.formatDate(new Date(), 'y-m-d'));
         $('.search').click();
     });
+
+    // 按通过时间查询
+    $('.pass-date-sort').on('click', function(){
+        searchShopSort();
+    });
 });
 </script>
 {% endblock %}
@@ -482,6 +488,12 @@ $(document).ready(function(){
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade pt-15 in active" id="shop_sort">
+                <span class="checkbox pa co-4091fc fi" style="left: 340px; top: -1px;">
+                    <label>
+                        <input type="checkbox" value="1" class="pass-date-sort">
+                        按通过时间排序
+                    </label>
+                </span>
                 <div class="col-md-12 col-xs-12 pl-0 pr-0 pt-20 pb-15">
                     此时间段，交易商户总数 <span class="co-4091fc fb f16 all_shop_count">0</span> 家，总交易流水 <span class="co-4091fc fb f16 all_order_price">0</span> 元，平均每家交易 <span class="co-4091fc fb f16 average_order_price">0</span> 元，总交易笔数 <span class="co-c23531 fb f16 all_order_count">0</span> 笔，平均每家交易 <span class="co-c23531 fb f16 average_order_count">0</span> 笔。
                 </div>
