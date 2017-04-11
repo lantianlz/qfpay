@@ -169,7 +169,7 @@ def get_shop_sort(request):
 
     result = shop_base.get_shop_sort(start_date, end_date, pass_date_sort, salesman)
     max_total = decimal.Decimal(result[0][3]) if len(result) > 0 else 0
-    max_total = max([x[3] for x in result])
+    max_total = max([x[3] for x in result]) if len(result) > 0 else 0
 
     for x in result:
 
