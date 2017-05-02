@@ -29,5 +29,12 @@ ACCOUNTS = [
         "PASSWORD": "yidaowang321",
         "COST": 0.003,
         "DEFAULT_RATE": 0.006
-    }
+    },
+    {
+        "CHANNEL_ID": 5, 
+        "USERNAME": u"九江好近-wx", 
+        "PASSWORD": "939235271264ZZM",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    },
 ]
