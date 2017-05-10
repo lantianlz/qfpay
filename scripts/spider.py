@@ -218,7 +218,7 @@ class Spider(object):
         '''
         获取每页的交易数据
         '''
-        print startTime, endTime
+        
         req = self.session.get(
             url = self.ORDER_URL + u"%s?page=%s&startTime=%s&endTime=%s" % (shop_id, page_index, startTime, endTime), 
             headers = {"User-Agent": self.USER_AGENT, "Referer": self.SHOP_URL}
