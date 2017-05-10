@@ -184,10 +184,10 @@ class Spider(object):
 
         # 时间
         today = datetime.datetime.now()
-        first_day_of_this_month = today.replace(day=1)
-        last_day_of_prev_month = first_day_of_this_month - datetime.timedelta(days=1)
+        # first_day_of_this_month = today.replace(day=1)
+        start_date = today - datetime.timedelta(days=30)
         if not startTime:
-            startTime = last_day_of_prev_month.strftime('%Y-%m-%d')
+            startTime = start_date.strftime('%Y-%m-%d')
         if not endTime:
             endTime = today.strftime('%Y-%m-%d')
 
@@ -218,7 +218,7 @@ class Spider(object):
         '''
         获取每页的交易数据
         '''
-
+        print startTime, endTime
         req = self.session.get(
             url = self.ORDER_URL + u"%s?page=%s&startTime=%s&endTime=%s" % (shop_id, page_index, startTime, endTime), 
             headers = {"User-Agent": self.USER_AGENT, "Referer": self.SHOP_URL}
@@ -249,7 +249,7 @@ class Spider(object):
             # ==== 保存数据 ====
             order_date = datetime.datetime.strptime(info['order_date'], '%Y-%m-%d %H:%M:%S')
             # 是否到达上次更新点
-            if order_date <= latest_order_date:
+            if order_date < latest_order_date:
                 is_break = True
                 break
 
