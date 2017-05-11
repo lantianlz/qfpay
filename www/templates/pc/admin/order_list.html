@@ -112,7 +112,7 @@
             <ul class="list-group col-md-12">
                 {% for order in orders %}
                 <li class="list-group-item col-md-12 order">
-                    {% if '微信' in order.type %}
+                    {% if '微信' in order.5 %}
                     <span class="pay-icon">
                         <img src="{{MEDIA_URL}}img/weixin.png">
                     </span>
@@ -123,10 +123,10 @@
                     </span>
                     <div class="col-md-12 txt">支付宝收款</div>
                     {% endif %}
-                    <div class="col-md-12 date">{{ order.order_date }}</div>
+                    <div class="col-md-12 date">{{ order.3 }}</div>
                     <span class="price">
                         <i class="fa fa-rmb f13"></i>
-                        <span>{{ order.price }}</span>
+                        <span>{{ order.4 }}</span>
                     </span>
                 </li>
                 {% endfor %}

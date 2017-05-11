@@ -29,8 +29,8 @@ def order_list(request, template_name='pc/admin/order_list.html'):
     end_date = request.POST.get('end_date')
     end_date = end_date if end_date else (tomorrow + ' 00:00')
 
-    orders = ShopBase(shop.channel_id).get_order_list(start_date, end_date, None, shop_id).values()
-    total = sum([x['price'] for x in orders])
+    orders = ShopBase(shop.channel_id).get_order_list(start_date, end_date, None, shop_id)
+    total = sum([x[4] for x in orders])
     order_count = len(orders)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
