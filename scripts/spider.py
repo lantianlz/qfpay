@@ -253,6 +253,7 @@ class Spider(object):
                 is_break = True
                 break
 
+            from django.db import IntegrityError
             try:
                 Order.objects.create(
                     shop_id = shop_id,
@@ -266,6 +267,9 @@ class Spider(object):
                     rate = self.DICT_SHOP_2_RATE[shop_id] - decimal.Decimal(self.COST),
                     channel_id = self.CHANNEL_ID
                 )
+
+            except IntegrityError, e:
+                pass
             except Exception, e:
                 traceback.print_exc()
                 continue
