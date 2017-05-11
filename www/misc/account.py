@@ -37,4 +37,11 @@ ACCOUNTS = [
         "COST": 0.0022,
         "DEFAULT_RATE": 0.0038
     },
+    {
+        "CHANNEL_ID": 6, 
+        "USERNAME": u"开封好近-wx", 
+        "PASSWORD": "xudong1983",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    },
 ]
