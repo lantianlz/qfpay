@@ -324,8 +324,7 @@ if __name__ == "__main__":
                     else:
                         spider.sync_order(shop.shop_id)
 
-
-
+    
 
 
 

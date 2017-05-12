@@ -44,4 +44,11 @@ ACCOUNTS = [
         "COST": 0.0022,
         "DEFAULT_RATE": 0.0038
     },
+    {
+        "CHANNEL_ID": 7, 
+        "USERNAME": u"雁塔田鑫-wx", 
+        "PASSWORD": "024459Jz",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    },
 ]
