@@ -51,4 +51,11 @@ ACCOUNTS = [
         "COST": 0.0022,
         "DEFAULT_RATE": 0.0038
     },
+    {
+        "CHANNEL_ID": 8, 
+        "USERNAME": u"南京迦尔信息-wx", 
+        "PASSWORD": "123456",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    },
 ]

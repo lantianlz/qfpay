@@ -382,6 +382,26 @@ class UserToChannelBase(object):
 
         return channels
 
+    def add_channel(self, email, nick, password, tel, channel_id):
+        '''
+        添加渠道商
+        '''
+
+        # 添加用户
+        from www.account import interface
+        flag, profile = interface.UserBase().regist_user(
+            email = email, 
+            nick = nick, 
+            password = password, 
+            re_password = password, 
+            ip = '127.0.0.1', 
+            mobilenumber = tel
+        )
+
+        # 给用户分配可以查看的渠道
+        UserToChannel.objects.create(user_id=profile.id, channel_id=channel_id)
+        UserToChannel.objects.create(user_id='e27713a30ae311e79a37a45e60bb9305', channel_id=channel_id)
+
 
 
 
