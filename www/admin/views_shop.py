@@ -377,7 +377,7 @@ def get_salesman_statistics_data(request):
         # 交易利润，排除掉 业务员刷卡的
         _profit = float(dict_salesman_2_shop[k][1]) if k != u'渠道录入' else 0
         # 提成比例
-        _percentage = float(dict_salesman_2_percentage.get(k, 0))
+        _percentage = float(dict_salesman_2_percentage.get(k, 0.3)) if k != u'渠道录入' else 0
         # 税后利润
         _profit_after_tax = _profit/1.03
 
