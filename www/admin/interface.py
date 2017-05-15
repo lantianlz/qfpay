@@ -258,7 +258,7 @@ class ShopBase(object):
         '''
 
         condition = " AND b.channel_id = %s " % self.channel_id
-        print date, shop_id, salesman
+        
         if shop_id:
             condition += " AND b.shop_id = %s " % shop_id
         if salesman:

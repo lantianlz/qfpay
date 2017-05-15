@@ -58,4 +58,11 @@ ACCOUNTS = [
         "COST": 0.0022,
         "DEFAULT_RATE": 0.0038
     },
+    {
+        "CHANNEL_ID": 9, 
+        "USERNAME": u"珠海环宇时创-wx", 
+        "PASSWORD": "hysc1226",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    },
 ]
