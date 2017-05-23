@@ -65,4 +65,11 @@ ACCOUNTS = [
         "COST": 0.0022,
         "DEFAULT_RATE": 0.0038
     },
+    {
+        "CHANNEL_ID": 10, 
+        "USERNAME": u"武汉好近-wx", 
+        "PASSWORD": "218998",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    }
 ]
