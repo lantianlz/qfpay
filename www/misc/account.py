@@ -71,5 +71,12 @@ ACCOUNTS = [
         "PASSWORD": "218998",
         "COST": 0.0022,
         "DEFAULT_RATE": 0.0038
-    }
+    },
+    {
+        "CHANNEL_ID": 11, 
+        "USERNAME": u"荆门纵横网络-wx", 
+        "PASSWORD": "zhwl666",
+        "COST": 0.0022,
+        "DEFAULT_RATE": 0.0038
+    },
 ]
