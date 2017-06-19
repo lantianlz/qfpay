@@ -146,4 +146,4 @@ SESSION_COOKIE_NAME = 'sessionid_qfpay'
 
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s ---------- %(pathname)s:%(module)s.%(funcName)s Line:%(lineno)d',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
+                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)

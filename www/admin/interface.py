@@ -215,7 +215,7 @@ class ShopBase(object):
         condition = " AND channel_id = %s " % self.channel_id
 
         if over_ten:
-            condition = " AND price >= 10 "
+            condition += " AND price >= 10 "
 
         sql = """
             SELECT shop_id, SUM(price), SUM(price*rate)
