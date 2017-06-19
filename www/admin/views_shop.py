@@ -124,6 +124,15 @@ def encouragement(request, template_name="pc/admin/encouragement.html"):
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@member_required
+@channel_required
+def performance(request, template_name="pc/admin/performance.html"):
+    '''
+    业务员考核统计
+    '''
+    date = datetime.datetime.now().strftime('%Y-%m')
+    
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
 
@@ -325,27 +334,33 @@ def get_order_list(request):
 
 
 def get_salesman_statistics_data(request):
+    '''
+    业务员交易统计
+    '''
+
     shop_base = ShopBase(request.session['CHANNEL_ID'])
 
     start_date = request.REQUEST.get('start_date')
     end_date = request.REQUEST.get('end_date')
+    over_ten = request.POST.get('over_ten', 'false')
+    over_ten = False if over_ten == 'false' else True
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
     # 销售员对应商户数量
     dict_salesman_2_shop_count = {}
-    for x in shop_base.get_shop_count_group_by_salesman(start_date, end_date):
+    for x in shop_base.get_shop_count_group_by_salesman():
         if not dict_salesman_2_shop_count.has_key(x[1]):
             dict_salesman_2_shop_count[x[1]] = x[0]
 
     # 商户金额字典
     dict_shop_2_total = {}
-    for x in shop_base.get_order_total_group_by_shop(start_date, end_date):
+    for x in shop_base.get_order_total_group_by_shop(start_date, end_date, over_ten):
         if not dict_shop_2_total.has_key(x['shop_id']):
             dict_shop_2_total[x['shop_id']] = x['price__sum']
     
     # 商户收益字典
     dict_shop_2_rate = {}
-    for x in shop_base.get_order_rate_group_by_shop(start_date, end_date):
+    for x in shop_base.get_order_rate_group_by_shop(start_date, end_date, over_ten):
         if not dict_shop_2_rate.has_key(x[0]):
             dict_shop_2_rate[x[0]] = x[1]
 
@@ -632,8 +647,86 @@ def get_encouragement_data_2(request):
 
 
 
+def get_performance_data(request):
+    '''
+    业务员考核统计
+    '''
+    import calendar
 
+    today = datetime.datetime.now()
+    date = request.REQUEST.get('date')
+    date = datetime.datetime.strptime(date, '%Y-%m')
 
+    shop_base = ShopBase(request.session['CHANNEL_ID'])
+
+    # 业务员总开单数字典
+    dict_salesman_2_shop_count = {}
+    for x in shop_base.get_shop_count_group_by_salesman():
+        if not dict_salesman_2_shop_count.has_key(x[1]):
+            dict_salesman_2_shop_count[x[1]] = x[0]
+
+    # 获取两个月内各个业务员开单情况
+    start_date = date - datetime.timedelta(days=1)
+    start_date = start_date.replace(day=1).strftime('%Y-%m-%d')
+    a, month_range = calendar.monthrange(date.year, date.month)
+    end_date = datetime.datetime(date.year, date.month, month_range).strftime('%Y-%m-%d')
+
+    this_month = end_date[:7]
+    last_month = start_date[:7]
+
+    dict_salesman_2_shop_of_month = {}
+    for x in shop_base.get_shop_count_group_by_salesman_and_month(start_date, end_date+' 23:59:59'):
+        if not dict_salesman_2_shop_of_month.has_key(x[1]):
+            dict_salesman_2_shop_of_month[x[1]] = {this_month: 0, last_month: 0}
+        dict_salesman_2_shop_of_month[x[1]][x[2]] += x[0]
+
+    # 获取指定时间各个业务员流失单
+    start_date = '%s-%s-%s 00:00:00' % (date.year, date.month, 1)
+    end_date = '%s-%s-%s 23:59:59' % (date.year, date.month, month_range)
+    latest_order_date = today - datetime.timedelta(days=3)
+    latest_order_date = latest_order_date.strftime('%Y-%m-%d %H:%M:%S')
+    dict_salesman_2_lost_shop = {}
+    for x in shop_base.get_lost_shop_group_by_salesman(start_date, end_date, latest_order_date):
+        if not dict_salesman_2_lost_shop.has_key(x[0]):
+            dict_salesman_2_lost_shop[x[0]] = x[1]
+
+    # 获取各业务员总日估流水
+    dict_salesman_2_average_trade = {}
+    for x in shop_base.get_average_trade_group_by_salesman():
+        if not dict_salesman_2_average_trade.has_key(x[0]):
+            dict_salesman_2_average_trade[x[0]] = [float(x[1]), float(x[1]) * 30]
+
+    # 获取业务员总销售流水
+    dict_shop_2_total = {}
+    for x in shop_base.get_total_order_group_by_salesman(start_date, end_date):
+        if not dict_shop_2_total.has_key(x[0]):
+            dict_shop_2_total[x[0]] = float(x[1])
+
+    data = []
+    for k in dict_salesman_2_shop_count.keys():
+
+        if k == u"渠道录入":
+            continue
+
+        data.append({
+            'name': k, 
+            'this_month_count': dict_salesman_2_shop_of_month[k][this_month] if dict_salesman_2_shop_of_month.has_key(k) else 0,
+            'last_month_count': dict_salesman_2_shop_of_month[k][last_month] if dict_salesman_2_shop_of_month.has_key(k) else 0,
+            'all_count': dict_salesman_2_shop_count.get(k, 0),
+            'lost_count': dict_salesman_2_lost_shop.get(k, 0),
+            'average_trade': dict_salesman_2_average_trade[k][0] if dict_salesman_2_average_trade.has_key(k) else 0,
+            'average_trade_of_month': dict_salesman_2_average_trade[k][1] if dict_salesman_2_average_trade.has_key(k) else 0,
+            'total': dict_shop_2_total[k] if dict_shop_2_total.has_key(k) else 0
+        })
+
+    data.sort(key=lambda k: k['total'], reverse=True)
+
+    return HttpResponse(
+        json.dumps({
+            'data': data
+        }),
+        mimetype='application/json'
+    )
 
 
 

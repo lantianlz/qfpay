@@ -1,0 +1,94 @@
+{% extends "pc/admin/home.html" %}
+
+{% block title %}业务员考核统计{% endblock title %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#date_search').datetimepicker({
+        format: 'yyyy-mm',
+        language: 'zh-CN',
+        minView: 3,
+        startView: 3,
+        autoclose: true
+    });
+
+    var search = function(){
+        ajaxSend(
+            "/admin/performance/get_performance_data", 
+            {'date': $('#date_search').val()},
+            function(data){
+                var dataTemplate = _.template([
+                    '<% _.each(records, function(record, num){ %>',
+                    '<tr>',
+                        '<td><%= num+1 %></td>',
+                        '<td><a href="/admin/shop?salesman=<%= record.name %>" target="_blank"><%= record.name %></a></td>',
+                        '<td><%= record.this_month_count %></td>',
+                        '<td><%= record.last_month_count %></td>',
+                        '<td><%= record.all_count %></td>',
+                        '<td><%= record.lost_count %></td>',
+                        '<td><%= record.this_month_count ? $.Global.Utils.formatPrice(record.lost_count/record.this_month_count*100)+"%" : "-" %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.average_trade) %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.average_trade_of_month) %></td>',
+                        '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
+                        '<td></td>',
+                    '</tr>',
+                    '<% }) %>'
+                ].join(''));
+                $('.table tbody').html(dataTemplate({'records': data.data}));
+            }
+        );
+    };
+
+    $('.search').on('click', function(){
+        search();
+    });
+
+    search();
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-70">
+    <div class="col-md-12 pt-20">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">日期</span>
+                <input type="text" class="form-control" id="date_search" value="{{date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>业务员</th>
+                    <th>当月开单</th>
+                    <th>上月开单</th>
+                    <th>总开单</th>
+                    <th>流失单</th>
+                    <th>流失率</th>
+                    <th>预估日流水</th>
+                    <th>预估月流水</th>
+                    <th>实际总流水</th>
+                    <th>开户奖励统计</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -195,20 +195,27 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_order_total_group_by_shop(self, start_date, end_date):
+    def get_order_total_group_by_shop(self, start_date, end_date, over_ten=False):
         '''
         按店铺id 获取商户交易额分组
         '''
-        return Order.objects.filter(
+        objs = Order.objects.filter(
             channel_id=self.channel_id, 
             order_date__range=(start_date, end_date)
-        ).values('shop_id').annotate(Sum('price'))
+        )
+        if over_ten:
+            objs = objs.filter(price__gt=10)
 
-    def get_order_rate_group_by_shop(self, start_date, end_date):
+        return objs.values('shop_id').annotate(Sum('price'))
+
+    def get_order_rate_group_by_shop(self, start_date, end_date, over_ten=False):
         '''
         按商户id 获取收益金额分组
         '''
         condition = " AND channel_id = %s " % self.channel_id
+
+        if over_ten:
+            condition = " AND price >= 10 "
 
         sql = """
             SELECT shop_id, SUM(price*rate)
@@ -347,7 +354,7 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_shop_count_group_by_salesman(self, start_date, end_date):
+    def get_shop_count_group_by_salesman(self):
         '''
         按销售人员分组获取店铺数量
         '''
@@ -364,6 +371,73 @@ class ShopBase(object):
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_shop_count_group_by_salesman_and_month(self, start_date, end_date):
+        '''
+        按销售人员和月份分组获取店铺数量
+        '''
+        condition = " AND channel_id = %s " % self.channel_id
+
+        sql = u"""
+            SELECT COUNT(owner), owner, DATE_FORMAT(pass_date, "%%Y-%%m")
+            FROM admin_shop 
+            WHERE %s <= pass_date 
+            AND pass_date <= %s 
+        """ + condition + """
+            GROUP BY owner, DATE_FORMAT(pass_date, "%%Y-%%m")
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_lost_shop_group_by_salesman(self, start_date, end_date, latest_order_date):
+        '''
+        按销售人员和月份分组获取店铺数量
+        '''
+        condition = " AND channel_id = %s " % self.channel_id
+
+        sql = u"""
+            SELECT owner, COUNT(name) 
+            FROM admin_shop 
+            WHERE %s <= pass_date 
+            AND pass_date <= %s 
+            AND latest_order_date <= %s
+        """ + condition + """
+            GROUP BY owner
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date, latest_order_date]) 
+
+    def get_average_trade_group_by_salesman(self):
+        '''
+        获取各业务员总日估流水
+        '''
+
+        sql = u"""
+            SELECT owner, SUM(average_trade) 
+            FROM admin_shop 
+            WHERE channel_id=1 
+            GROUP BY owner
+        """
+
+        return raw_sql.exec_sql(sql, [])
+
+    def get_total_order_group_by_salesman(self, start_date, end_date):
+        '''
+        按销售人员获取流水
+        '''
+        condition = " AND a.channel_id = %s " % self.channel_id
+
+        sql = u"""
+            SELECT a.owner, SUM(b.price) 
+            FROM admin_shop a, admin_order b
+            WHERE a.shop_id = b.shop_id
+            AND %s <= b.order_date
+            AND b.order_date <= %s
+        """ + condition + """
+            GROUP BY a.owner
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date]) 
 
 
 

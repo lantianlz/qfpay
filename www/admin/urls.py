@@ -8,6 +8,10 @@ urlpatterns = patterns('www.admin.views',
                        )
 
 urlpatterns += patterns('www.admin.views_shop',
+
+      url(r'^performance/get_performance_data$', 'get_performance_data'), 
+      url(r'^performance$', 'performance'), 
+
       url(r'^encouragement/get_encouragement_data_2$', 'get_encouragement_data_2'), 
       url(r'^encouragement/get_encouragement_data$', 'get_encouragement_data'), 
       url(r'^encouragement$', 'encouragement'), 

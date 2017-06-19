@@ -16,6 +16,7 @@ sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../')),
 os.environ['DJANGO_SETTINGS_MODULE'] = 'www.settings'
 
 from www.admin.models import Shop, Order
+from django.db.models import Sum, Count
 
 class Spider(object):
 
@@ -211,7 +212,9 @@ class Spider(object):
                     s.save()
                     first = False
 
-        print u'获取商户[ %s ]交易完成，总共更新[ %s ]笔交易。' % (shop_id, len(shop_orders))
+        # 更新日平均交易金额
+        day_average_trade = self._calculate_average_trade(shop_id)
+        print u'获取商户[ %s ]交易完成，总共更新[ %s ]笔交易，日平均交易额[ %.2f ]。' % (shop_id, len(shop_orders), day_average_trade)
         print ''
 
     def _sync_order_per_page(self, shop_id, page_index, latest_order_date, startTime, endTime):
@@ -295,6 +298,32 @@ class Spider(object):
                     break
 
         return infos, index
+
+    def _calculate_average_trade(self, shop_id):
+        '''
+        计算日均交易额
+        '''
+        INTERVAL_DAYS = 7
+
+        now = datetime.datetime.now()
+        end_date = now - datetime.timedelta(days=1)
+        start_date = end_date - datetime.timedelta(days=INTERVAL_DAYS)
+
+        total_price = Order.objects.filter(
+            shop_id = shop_id,
+            order_date__range = (start_date, end_date),
+            channel_id = self.CHANNEL_ID
+        ).aggregate(Sum('price'))['price__sum'] or 0
+
+        average_trade = total_price / INTERVAL_DAYS
+
+        # 更新日平均交易额
+        shop = Shop.objects.get(shop_id=shop_id)
+        shop.average_trade = average_trade
+        shop.save()
+
+        return average_trade
+
 
 
 if __name__ == "__main__":

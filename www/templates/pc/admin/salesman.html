@@ -32,7 +32,11 @@ $(document).ready(function(){
         */
         ajaxSend(
             "/admin/salesman/get_salesman_statistics_data", 
-            {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()},
+            {
+                'start_date': $('#start_date_search').val(), 
+                'end_date': $('#end_date_search').val(),
+                'over_ten': $('.over-ten').attr("checked") == "checked"
+            },
             function(data){
 
                 var main = echarts.init(document.getElementById('percentage_chart'));
@@ -123,13 +127,20 @@ $(document).ready(function(){
 <div class="row pt-70">
     <div class="col-md-12 pt-20">
         <form action="." class="form-inline" onsubmit="javascript: return false;">
-            <div class="input-group input-group-sm pb-10">
+            <div class="input-group input-group-sm pb-10 pr-10">
                 <span class="input-group-addon">开始日期</span>
                 <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
             </div>
-            <div class="input-group input-group-sm pb-10">
+            <div class="input-group input-group-sm pb-10 pr-10">
                 <span class="input-group-addon">结束日期</span>
                 <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10 pr-10">
+                <label class="checkbox-inline">
+                    <input type="checkbox" value="1" class="over-ten" checked="checked"> 排除10元以下交易
+                </label>
+            </div>
+            <div class="input-group input-group-sm pb-10">
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
                 </span>
