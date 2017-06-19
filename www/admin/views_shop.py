@@ -351,18 +351,17 @@ def get_salesman_statistics_data(request):
     for x in shop_base.get_shop_count_group_by_salesman():
         if not dict_salesman_2_shop_count.has_key(x[1]):
             dict_salesman_2_shop_count[x[1]] = x[0]
-
+    
     # 商户金额字典
     dict_shop_2_total = {}
-    for x in shop_base.get_order_total_group_by_shop(start_date, end_date, over_ten):
-        if not dict_shop_2_total.has_key(x['shop_id']):
-            dict_shop_2_total[x['shop_id']] = x['price__sum']
-    
     # 商户收益字典
     dict_shop_2_rate = {}
-    for x in shop_base.get_order_rate_group_by_shop(start_date, end_date, over_ten):
+    for x in shop_base.get_order_total_and_rate_group_by_shop(start_date, end_date, over_ten):
+        if not dict_shop_2_total.has_key(x[0]):
+            dict_shop_2_total[x[0]] = x[1]
+
         if not dict_shop_2_rate.has_key(x[0]):
-            dict_shop_2_rate[x[0]] = x[1]
+            dict_shop_2_rate[x[0]] = x[2]
 
     # 业务员与商户对照
     dict_salesman_2_shop = {}
@@ -694,7 +693,7 @@ def get_performance_data(request):
     dict_salesman_2_average_trade = {}
     for x in shop_base.get_average_trade_group_by_salesman():
         if not dict_salesman_2_average_trade.has_key(x[0]):
-            dict_salesman_2_average_trade[x[0]] = [float(x[1]), float(x[1]) * 30]
+            dict_salesman_2_average_trade[x[0]] = [float(x[1] or 0), float(x[1] or 0) * 30]
 
     # 获取业务员总销售流水
     dict_shop_2_total = {}

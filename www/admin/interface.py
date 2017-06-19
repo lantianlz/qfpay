@@ -204,11 +204,11 @@ class ShopBase(object):
             order_date__range=(start_date, end_date)
         )
         if over_ten:
-            objs = objs.filter(price__gt=10)
+            objs = objs.filter(price__gte=10)
 
         return objs.values('shop_id').annotate(Sum('price'))
 
-    def get_order_rate_group_by_shop(self, start_date, end_date, over_ten=False):
+    def get_order_total_and_rate_group_by_shop(self, start_date, end_date, over_ten=False):
         '''
         按商户id 获取收益金额分组
         '''
@@ -218,7 +218,7 @@ class ShopBase(object):
             condition = " AND price >= 10 "
 
         sql = """
-            SELECT shop_id, SUM(price*rate)
+            SELECT shop_id, SUM(price), SUM(price*rate)
             FROM admin_order
             WHERE %s <= order_date AND order_date <= %s
         """ + condition + """
