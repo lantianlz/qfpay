@@ -689,9 +689,9 @@ def get_performance_data(request):
         if not dict_salesman_2_lost_shop.has_key(x[0]):
             dict_salesman_2_lost_shop[x[0]] = x[1]
 
-    # 获取各业务员总日估流水
+    # 获取各业务员总新增日估流水
     dict_salesman_2_average_trade = {}
-    for x in shop_base.get_average_trade_group_by_salesman():
+    for x in shop_base.get_average_trade_group_by_salesman(start_date, end_date):
         if not dict_salesman_2_average_trade.has_key(x[0]):
             dict_salesman_2_average_trade[x[0]] = [float(x[1] or 0), float(x[1] or 0) * 30]
 
@@ -720,9 +720,21 @@ def get_performance_data(request):
 
     data.sort(key=lambda k: k['total'], reverse=True)
 
+    all_new = 0
+    all_lost = 0
+    all_lost_rate = 0
+    for x in data:
+        all_new += x['this_month_count']
+        all_lost += x['lost_count']
+
+    all_lost_rate = float(all_lost)/all_new*100 if all_new else 0
+
     return HttpResponse(
         json.dumps({
-            'data': data
+            'data': data,
+            'all_new': all_new,
+            'all_lost': all_lost,
+            'all_lost_rate': all_lost_rate
         }),
         mimetype='application/json'
     )

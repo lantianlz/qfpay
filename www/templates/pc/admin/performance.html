@@ -33,7 +33,7 @@ $(document).ready(function(){
                         '<td><%= record.last_month_count %></td>',
                         '<td><%= record.all_count %></td>',
                         '<td><%= record.lost_count %></td>',
-                        '<td><%= record.this_month_count ? $.Global.Utils.formatPrice(record.lost_count/record.this_month_count*100)+"%" : "-" %></td>',
+                        '<td class="co-ea232a"><%= record.this_month_count ? $.Global.Utils.formatPrice(record.lost_count/record.this_month_count*100)+"%" : "-" %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.average_trade) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.average_trade_of_month) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
@@ -42,6 +42,10 @@ $(document).ready(function(){
                     '<% }) %>'
                 ].join(''));
                 $('.table tbody').html(dataTemplate({'records': data.data}));
+
+                $('.all_new').text(data.all_new);
+                $('.all_lost').text(data.all_lost);
+                $('.all_lost_rate').text($.Global.Utils.formatPrice(data.all_lost_rate));
             }
         );
     };
@@ -57,6 +61,7 @@ $(document).ready(function(){
 
 {% block admin_main %}
 <div class="row pt-70">
+    <div class="col-md-12 f25 text-center pt-20 pb-0">业务员考核统计</div>
     <div class="col-md-12 pt-20">
         <form action="." class="form-inline" onsubmit="javascript: return false;">
             <div class="input-group input-group-sm pb-10">
@@ -79,8 +84,8 @@ $(document).ready(function(){
                     <th>总开单</th>
                     <th>流失单</th>
                     <th>流失率</th>
-                    <th>预估日流水</th>
-                    <th>预估月流水</th>
+                    <th>预估新增日流水</th>
+                    <th>预估新增月流水</th>
                     <th>实际总流水</th>
                     <th>开户奖励统计</th>
                 </tr>
@@ -89,6 +94,11 @@ $(document).ready(function(){
                 
             </tbody>
         </table>
+    </div>
+    <div class="col-md-12 text-right pb-20">
+        当月总共新开<span class="co-4091fc fb f16 pl-5 pr-5 all_new">0</span>单，
+        当月总共流失<span class="co-4091fc fb f16 pl-5 pr-5 all_lost">0</span>单，
+        总流失率<span class="co-4091fc fb f16 pl-5 pr-5 all_lost_rate">20</span>%
     </div>
 </div>
 {% endblock %}

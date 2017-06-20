@@ -407,19 +407,22 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date, latest_order_date]) 
 
-    def get_average_trade_group_by_salesman(self):
+    def get_average_trade_group_by_salesman(self, start_date, end_date):
         '''
         获取各业务员总日估流水
         '''
+        condition = " AND channel_id = %s " % self.channel_id
 
         sql = u"""
             SELECT owner, SUM(average_trade) 
             FROM admin_shop 
-            WHERE channel_id=1 
+            WHERE %s <= pass_date 
+            and pass_date <= %s
+        """ + condition + """
             GROUP BY owner
         """
 
-        return raw_sql.exec_sql(sql, [])
+        return raw_sql.exec_sql(sql, [start_date, end_date])
 
     def get_total_order_group_by_salesman(self, start_date, end_date):
         '''
