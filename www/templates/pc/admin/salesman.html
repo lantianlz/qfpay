@@ -93,6 +93,8 @@ $(document).ready(function(){
                         '<td><%= num+1 %></td>',
                         '<td><a href="/admin/shop?salesman=<%= record.name %>" target="_blank"><%= record.name %></a></td>',
                         '<td><%= record.shop_count %></td>',
+                        '<td><%= record.lost_count %></td>',
+                        '<td class="co-ea232a"><%= record.shop_count ? $.Global.Utils.formatPrice(record.lost_count/record.shop_count*100)+"%" : "-" %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.profit) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.profit_after_tax) %></td>',
@@ -157,6 +159,8 @@ $(document).ready(function(){
                     <th>#</th>
                     <th>业务员</th>
                     <th>商户数量</th>
+                    <th>流失数量</th>
+                    <th>流失率</th>
                     <th>交易金额</th>
                     <th>交易利润</th>
                     <th>税后利润(3%)</th>

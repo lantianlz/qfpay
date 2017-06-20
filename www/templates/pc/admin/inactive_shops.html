@@ -26,10 +26,14 @@
 <script type="text/javascript">
 $(document).ready(function(){
     var allShopsCount = $('table tr').length - 1,
+        noTradeCount = parseInt('{{ no_trade_count }}'),
         inactiveShops = $('table tr.co-c23531'),
         inactiveShopsCount = inactiveShops.length,
-        inactiveRate = inactiveShopsCount == 0 ? 0 : $.Global.Utils.formatPrice(inactiveShopsCount/allShopsCount*100);
-    
+        inactiveRate = inactiveShopsCount == 0 ? 0 : $.Global.Utils.formatPrice(inactiveShopsCount/allShopsCount*100),
+        inactiveRateExceptNoTrade = $.Global.Utils.formatPrice(
+            (inactiveShopsCount - noTradeCount)/(allShopsCount - noTradeCount)*100
+        );
+    console.log(inactiveShopsCount,noTradeCount,allShopsCount)
     if(inactiveShopsCount > 0){
         var lastInactiveShop = inactiveShops.eq(inactiveShops.length - 1);
     
@@ -38,6 +42,7 @@ $(document).ready(function(){
     }
 
     $('#inactive-rate').text(inactiveRate);
+    $('#inactive-rate-except-no-trade').text(inactiveRateExceptNoTrade);
     // new countUp("inactive-rate", 0, inactiveRate, 1, 1).start();
 });
 </script>
@@ -48,7 +53,8 @@ $(document).ready(function(){
     <div class="col-md-12 pt-20">
         <div class="col-md-12 tips pt-10">
             <div class="col-md-12 f18 fb">
-                商户流失率为<span class="co-c23531 f25 pr-5 pl-5" id="inactive-rate">0</span>%
+                商户流失率为<span class="co-c23531 f25 pr-5 pl-5" id="inactive-rate">0</span>%,
+                排除未交易商户流失率为<span class="co-c23531 f25 pr-5 pl-5" id="inactive-rate-except-no-trade">0</span>%
             </div>
             <div class="col-md-12 f16 pt-10 pb-10 fi co-95989d">维护一个已有客户的成本远低于新开一个商户，请合理安排回访</div>
         </div>

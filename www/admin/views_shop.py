@@ -94,8 +94,10 @@ def inactive_shops(request, template_name='pc/admin/inactive_shops.html'):
     '''
     风险流失统计
     '''
+    shop_base = ShopBase(request.session['CHANNEL_ID'])
+    shops = shop_base.get_shops().order_by('latest_order_date')
 
-    shops = ShopBase(request.session['CHANNEL_ID']).get_shops().order_by('latest_order_date')
+    no_trade_count = len(shop_base.get_no_trade_shop_count())
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -333,6 +335,26 @@ def get_order_list(request):
     )
 
 
+def _get_percentage(total, percentage):
+    '''
+    0 - 100万 ---> 0.3
+    100万 - 300万 ---> 0.4
+    300万+ ---> 0.5
+    '''
+    _percentage = 0.3
+
+    # 默认为0.3，大于0.3则表示特殊处理，直接使用
+    if 0.3 <= percentage:
+        return float(percentage)
+
+    if 1000000 < total and total <= 3000000:
+        percentage = 0.4
+
+    if 3000000 < total:
+        percentage = 0.5
+
+    return percentage
+
 def get_salesman_statistics_data(request):
     '''
     业务员交易统计
@@ -378,6 +400,18 @@ def get_salesman_statistics_data(request):
     for x in shop_base.get_all_salesman():
         dict_salesman_2_percentage[x.contact] = x.percentage
 
+    # 业务员总流失单对照
+    today = datetime.datetime.now()
+    latest_order_date = today - datetime.timedelta(days=3)
+    latest_order_date = latest_order_date.strftime('%Y-%m-%d %H:%M:%S')
+    dict_salesman_2_lost_shop = {}
+    for x in shop_base.get_lost_shop_group_by_salesman(
+        '2015-01-01 00:00:00', 
+        today.strftime('%Y-%m-%d %H:%M:%S'),
+        latest_order_date
+    ):
+        dict_salesman_2_lost_shop[x[0]] = x[1]
+
     # 图表数据
     xdata = []
     ydata = []
@@ -391,7 +425,7 @@ def get_salesman_statistics_data(request):
         # 交易利润，排除掉 业务员刷卡的
         _profit = float(dict_salesman_2_shop[k][1]) if k != u'渠道录入' else 0
         # 提成比例
-        _percentage = float(dict_salesman_2_percentage.get(k, 0.3)) if k != u'渠道录入' else 0
+        _percentage = _get_percentage(_total, dict_salesman_2_percentage.get(k, 0.3)) if k != u'渠道录入' else 0
         # 税后利润
         _profit_after_tax = _profit/1.03
 
@@ -403,6 +437,7 @@ def get_salesman_statistics_data(request):
         data.append({
             'name': k,
             'shop_count': dict_salesman_2_shop_count.get(k, 0),
+            'lost_count': dict_salesman_2_lost_shop.get(k, 0),
             'total': _total,
             'profit': _profit,
             'profit_after_tax': _profit_after_tax,

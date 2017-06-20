@@ -391,7 +391,7 @@ class ShopBase(object):
 
     def get_lost_shop_group_by_salesman(self, start_date, end_date, latest_order_date):
         '''
-        按销售人员和月份分组获取店铺数量
+        按销售人员和月份分组获取流失店铺数量
         '''
         condition = " AND channel_id = %s " % self.channel_id
 
@@ -441,6 +441,25 @@ class ShopBase(object):
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date]) 
+
+
+    def get_no_trade_shop_count(self):
+        '''
+        获取未交易的店铺数量
+        '''
+        condition = " AND channel_id = %s " % self.channel_id
+
+        sql = u"""
+            SELECT shop_id, SUM(price) AS total
+            FROM admin_order
+            WHERE '2015-05-01 00:00:00' <= order_date
+            and order_date <= %s
+        """ + condition + """
+            GROUP BY shop_id 
+            having total <= 100
+        """
+
+        return raw_sql.exec_sql(sql, [datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')]) 
 
 
 
