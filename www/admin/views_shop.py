@@ -775,6 +775,48 @@ def get_performance_data(request):
     )
 
 
+def get_new_shop_of_current_month(request):
+    import calendar
+
+    owner = request.REQUEST.get('owner', None)
+    date = request.REQUEST.get('date')
+    date = datetime.datetime.strptime(date, '%Y-%m')
+    a, month_range = calendar.monthrange(date.year, date.month)
+    start_date = '%s-%s-%s 00:00:00' % (date.year, date.month, 1)
+    end_date = '%s-%s-%s 23:59:59' % (date.year, date.month, month_range)
+
+    shop_base = ShopBase(request.session['CHANNEL_ID'])
+
+    data = []
+    all_reward = 0
+    for shop in shop_base.get_shops_by_pass_date(start_date, end_date, owner):
+        reward = 0
+        if 100 < shop.average_trade and shop.average_trade <= 1000:
+            reward = 10
+        if shop.average_trade > 1000:
+            reward = 20
+
+        data.append({
+            'shop_id': shop.shop_id,
+            'name': shop.name,
+            'pass_date': str(shop.pass_date)[:10],
+            'owner': shop.owner,
+            'latest_order_date': str(shop.latest_order_date),
+            'average_trade': float(shop.average_trade),
+            'reward': reward
+        })
+
+        all_reward += reward
+
+    return HttpResponse(
+        json.dumps({
+            'data': data,
+            'all_reward': all_reward
+        }),
+        mimetype='application/json'
+    )
+
+
 
 
 

@@ -9,6 +9,7 @@ urlpatterns = patterns('www.admin.views',
 
 urlpatterns += patterns('www.admin.views_shop',
 
+      url(r'^performance/get_new_shop_of_current_month$', 'get_new_shop_of_current_month'), 
       url(r'^performance/get_performance_data$', 'get_performance_data'), 
       url(r'^performance$', 'performance'), 
 

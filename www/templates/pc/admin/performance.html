@@ -4,7 +4,12 @@
 
 {% block css %}
 <style type="text/css">
-
+.modal-content {
+    border-radius: 1px;
+}
+.modal-body{
+    padding-bottom: 0;
+}
 </style>
 {% endblock %}
 
@@ -37,7 +42,7 @@ $(document).ready(function(){
                         '<td><%= $.Global.Utils.formatPrice(record.average_trade) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.average_trade_of_month) %></td>',
                         '<td><%= $.Global.Utils.formatPrice(record.total) %></td>',
-                        '<td></td>',
+                        '<td><a class="pointer" data-owner="<%= record.name %>">查看开户奖励</a></td>',
                     '</tr>',
                     '<% }) %>'
                 ].join(''));
@@ -52,6 +57,73 @@ $(document).ready(function(){
 
     $('.search').on('click', function(){
         search();
+    });
+
+    $('.pointer').live('click', function(){
+        var owner = $(this).data('owner');
+        ajaxSend(
+            "/admin/performance/get_new_shop_of_current_month", 
+            {'date': $('#date_search').val(), 'owner': owner},
+            function(data){
+                var html = [
+                '<div class="modal fade" id="detail_modal" tabindex="-1" role="dialog">',
+                    '<div class="modal-dialog">',
+                        '<div class="modal-content">',
+                            '<div class="modal-header pb-5">',
+                                '<h4 class="modal-title">新开单日流水</h4>',
+                            '</div>',
+                        '<div class="modal-body">',
+                            '<table class="table table-hover">',
+                                '<thead>',
+                                    '<tr>',
+                                        '<th>#</th>',
+                                        '<th>商户</th>',
+                                        '<th>通过日期</th>',
+                                        '<th>平均日流水</th>',
+                                        '<th>奖励金额</th>',
+                                    '</tr>',
+                                '</thead>',
+                                '<tbody>',
+
+                                '</tbody>',
+                            '</table>',
+                        '</div>',
+                        '<div class="modal-footer">',
+                            '<div>总开户奖励 <span class="all-reward co-4091fc fb f16">0</span> 元</div>',
+                        '</div>',
+                    '</div>',
+                '</div>'
+                ].join('');
+
+                $('#detail_modal').remove();
+
+                $("body").append(html);
+
+                // 填充数据
+                $.map(data.data, function(per, i){
+                    $('#detail_modal tbody').append(
+                        String.format([
+                            '<tr>',
+                                '<td>{0}</td>',
+                                '<td><a href="/admin/per_shop/{1}/" target="_blank">{2}</a></td>',
+                                '<td>{3}</td>',
+                                '<td>{4}</td>',
+                                '<td class="co-4091fc">{5}</td>',
+                            '</tr>'
+                        ].join(''), 
+                        i+1, 
+                        per.shop_id, 
+                        per.name, 
+                        per.pass_date,
+                        $.Global.Utils.formatPrice(per.average_trade),
+                        $.Global.Utils.formatPrice(per.reward))
+                    );
+                });
+
+                $('#detail_modal').modal({'show': true});
+                $('.all-reward').text(data.all_reward);
+            }
+        );
     });
 
     search();

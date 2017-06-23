@@ -325,14 +325,18 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date, start_date, end_date])
 
-    def get_shops_by_pass_date(self, start_date, end_date):
+    def get_shops_by_pass_date(self, start_date, end_date, owner=None):
         '''
         '''
 
-        return Shop.objects.filter(
+        objs = Shop.objects.filter(
             channel_id=self.channel_id, 
             pass_date__range=(start_date, end_date)
         )
+        if owner:
+            objs = objs.filter(owner=owner)
+
+        return objs
 
     def get_encouragement_detail_group_by_pay_type_of_shop(self, start_date, end_date, shop_id):
         '''
@@ -460,7 +464,6 @@ class ShopBase(object):
         """
 
         return raw_sql.exec_sql(sql, [datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')]) 
-
 
 
 class UserToChannelBase(object):
