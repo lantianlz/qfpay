@@ -303,7 +303,7 @@ class Spider(object):
         '''
         计算日均交易额
         '''
-        INTERVAL_DAYS = 7
+        INTERVAL_DAYS = 3
 
         now = datetime.datetime.now()
         end_date = now - datetime.timedelta(days=1)
