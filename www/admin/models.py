@@ -54,7 +54,7 @@ class Shop(models.Model):
     rate = models.DecimalField(verbose_name=u"费率", max_digits=8, decimal_places=4, default=0.0038, null=True)
     owner = models.CharField(verbose_name=u'所属业务员', max_length=32, null=True)
     pass_date = models.DateTimeField(verbose_name=u'通过时间', null=True)
-    percentage = models.DecimalField(verbose_name=u"提成比率", max_digits=8, decimal_places=2, default=0.3, null=True)
+    percentage = models.DecimalField(verbose_name=u"提成比率", max_digits=8, decimal_places=2, null=True)
     latest_order_date = models.DateTimeField(verbose_name=u'最后交易时间', null=True)
     channel_id = models.IntegerField(verbose_name=u'渠道id', db_index=True, null=True)
     average_trade = models.DecimalField(verbose_name=u"日平均交易额", max_digits=8, decimal_places=2, default=0, null=True)

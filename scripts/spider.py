@@ -331,6 +331,8 @@ if __name__ == "__main__":
     from www.misc import account
     import sys
     
+    start_time = datetime.datetime.now()
+
     # 渠道id
     channel_id = sys.argv[1]
     # 是否初始化
@@ -353,7 +355,10 @@ if __name__ == "__main__":
                     else:
                         spider.sync_order(shop.shop_id)
 
-    
+    end_time = datetime.datetime.now()
+    total_min = (end_time - start_time).seconds / 60.0
+    print ''
+    print '抓取开始时间：%s, 结束时间：%s, 总耗时：%2.f 分钟' % (start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S'), total_min)
 
 
 

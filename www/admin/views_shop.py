@@ -341,11 +341,11 @@ def _get_percentage(total, percentage):
     100万 - 300万 ---> 0.4
     300万+ ---> 0.5
     '''
-    _percentage = 0.3
-
-    # 默认为0.3，大于0.3则表示特殊处理，直接使用
-    if 0.3 <= percentage:
+    if percentage is not None:
         return float(percentage)
+
+    if total <= 1000000:
+        percentage = 0.3 
 
     if 1000000 < total and total <= 3000000:
         percentage = 0.4
@@ -353,7 +353,7 @@ def _get_percentage(total, percentage):
     if 3000000 < total:
         percentage = 0.5
 
-    return percentage
+    return float(percentage)
 
 def get_salesman_statistics_data(request):
     '''
@@ -425,7 +425,7 @@ def get_salesman_statistics_data(request):
         # 交易利润，排除掉 业务员刷卡的
         _profit = float(dict_salesman_2_shop[k][1]) if k != u'渠道录入' else 0
         # 提成比例
-        _percentage = _get_percentage(_total, dict_salesman_2_percentage.get(k, 0.3)) if k != u'渠道录入' else 0
+        _percentage = _get_percentage(_total, dict_salesman_2_percentage.get(k, None)) if k != u'渠道录入' else 0
         # 税后利润
         _profit_after_tax = _profit/1.03
 
