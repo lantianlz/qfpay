@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/admin-site.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -28,6 +29,43 @@ $(document).ready(function(){
         /*
             交易笔数
         */
+        var createData = function(){
+            var x_price_data = [],
+                y_price_data = [],
+                y_count_data = [];
+
+            var start = new Date(2017, 2, 1), 
+                end = new Date(2017, 7, 1),
+                temp = end - start,
+                max = 100,
+                i = 0;
+
+            while(temp > 0){
+                max += 2;
+                i += 50;
+                x_price_data.push($.Global.Utils.formatDate(start, 'y-m-d'));
+                y_price_data.push(
+                    $.Global.Utils.formatPrice(
+                        (Math.round(Math.random()*3000) + 4000+i)
+                    )
+                );
+                y_count_data.push(1);
+
+                start = new Date(start.getTime() + 2*24*60*60*1000);
+                temp = end - start;
+            }
+
+            return {
+                'x_price_data': x_price_data,
+                'y_price_data': y_price_data,
+                'y_count_data': y_count_data,
+                'all_order_price': 1134533.23, 
+                'average_order_price': 8710.24, 
+                'all_order_count': 46862,
+                'average_order_count': 271
+            }
+        };
+
         ajaxSend(
             "/admin/shop/get_order_statistic_data", 
             {
@@ -37,6 +75,8 @@ $(document).ready(function(){
                 'shop_id': "{{ shop_id }}"
             },
             function(data){
+                // data = createData();
+                // console.log(data);
 
                 $('#order_statistic .all_order_price').html($.Global.Utils.formatPrice(data.all_order_price));
                 $('#order_statistic .average_order_price').html($.Global.Utils.formatPrice(data.average_order_price));

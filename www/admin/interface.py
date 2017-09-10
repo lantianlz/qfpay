@@ -19,6 +19,7 @@ dict_err = {
 
 dict_err.update(consts.G_DICT_ERROR)
 
+
 class PermissionBase(object):
 
     """docstring for PermissionBase"""
@@ -95,28 +96,18 @@ class ShopBase(object):
         except Shop.DoesNotExist:
             return ""
 
-    def get_shop_sort(self, start_date, end_date, pass_date_sort=False, salesman=None):
+    def get_shop_sort(self, start_date, end_date):
         '''
         获取店铺排行
         '''
-        condition = " AND a.channel_id = %s " % self.channel_id
-
-        if salesman:
-            condition += " AND a.owner = '%s' " % salesman
-
-        sort_str = 'total'
-        if pass_date_sort:
-            sort_str = 'pass_date'
+        condition = " AND channel_id = %s " % self.channel_id
 
         sql = """
-            SELECT a.shop_id, a.name, COUNT(a.shop_id), SUM(b.price) AS total, pass_date
-            FROM admin_shop a, admin_order b 
-            WHERE %s <= b.order_date AND b.order_date <= %s
-            AND a.shop_id = b.shop_id
+            SELECT shop_id, COUNT(shop_id), SUM(price) AS total
+            FROM admin_order 
+            WHERE %s <= order_date AND order_date <= %s
         """ + condition + """
-            GROUP BY a.shop_id
-            ORDER BY 
-        """ + sort_str + """ DESC
+            GROUP BY shop_id
         """
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
@@ -170,11 +161,11 @@ class ShopBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_order_list(self, start_date, end_date, price_sort, shop_id, salesman=None):
+    def get_order_list(self, start_date, end_date, price_sort, shop_id, salesman=None, page_index=1):
         '''
         获取商户交易流水
         '''
-        
+
         condition = " AND b.channel_id = %s " % self.channel_id
 
         if shop_id:
@@ -186,21 +177,33 @@ class ShopBase(object):
         else:
             condition += " order by order_date desc"
 
+        page_str = " limit %s, 15" % ((page_index - 1) * 15)
+
+        # 查询总记录数
+        sql = """
+            SELECT count(*)
+            FROM admin_shop a, admin_order b
+            WHERE %s <= b.order_date AND b.order_date <= %s
+            AND a.shop_id = b.shop_id
+            AND b.channel_id = 
+        """ + self.channel_id
+        total_count = raw_sql.exec_sql(sql, [start_date, end_date])[0][0]
+
         sql = """
             SELECT a.name, b.order_no, b.card_no, b.order_date, b.price, b.type, b.state
             FROM admin_shop a, admin_order b
             WHERE %s <= b.order_date AND b.order_date <= %s
             AND a.shop_id = b.shop_id
-        """ + condition
+        """ + condition + page_str
 
-        return raw_sql.exec_sql(sql, [start_date, end_date])
+        return raw_sql.exec_sql(sql, [start_date, end_date]), total_count
 
     def get_order_total_group_by_shop(self, start_date, end_date, over_ten=False):
         '''
         按店铺id 获取商户交易额分组
         '''
         objs = Order.objects.filter(
-            channel_id=self.channel_id, 
+            channel_id=self.channel_id,
             order_date__range=(start_date, end_date)
         )
         if over_ten:
@@ -229,7 +232,7 @@ class ShopBase(object):
 
     def get_shops(self, owner=None):
         objs = Shop.objects.filter(channel_id=self.channel_id).exclude(owner=u"渠道录入")
-        
+
         if owner:
             objs = objs.filter(owner=owner)
 
@@ -265,7 +268,7 @@ class ShopBase(object):
         '''
 
         condition = " AND b.channel_id = %s " % self.channel_id
-        
+
         if shop_id:
             condition += " AND b.shop_id = %s " % shop_id
         if salesman:
@@ -281,7 +284,6 @@ class ShopBase(object):
         """
 
         return raw_sql.exec_sql(sql, [date + " 00:00:00 ", date + " 23:59:59 "])
-
 
     def get_timesharing_detail_group_by_shop_id(self, date, hour, salesman=None):
         '''
@@ -303,7 +305,7 @@ class ShopBase(object):
             LIMIT 0, 10
         """
 
-        return raw_sql.exec_sql(sql, [date+' '+hour+':00:00', date+' '+hour+':59:59'])
+        return raw_sql.exec_sql(sql, [date + ' ' + hour + ':00:00', date + ' ' + hour + ':59:59'])
 
     def get_encouragement_detail_group_by_pay_type(self, start_date, end_date):
         '''
@@ -330,7 +332,7 @@ class ShopBase(object):
         '''
 
         objs = Shop.objects.filter(
-            channel_id=self.channel_id, 
+            channel_id=self.channel_id,
             pass_date__range=(start_date, end_date)
         )
         if owner:
@@ -409,7 +411,7 @@ class ShopBase(object):
             GROUP BY owner
         """
 
-        return raw_sql.exec_sql(sql, [start_date, end_date, latest_order_date]) 
+        return raw_sql.exec_sql(sql, [start_date, end_date, latest_order_date])
 
     def get_average_trade_group_by_salesman(self, start_date, end_date):
         '''
@@ -444,8 +446,7 @@ class ShopBase(object):
             GROUP BY a.owner
         """
 
-        return raw_sql.exec_sql(sql, [start_date, end_date]) 
-
+        return raw_sql.exec_sql(sql, [start_date, end_date])
 
     def get_no_trade_shop_count(self):
         '''
@@ -463,7 +464,7 @@ class ShopBase(object):
             having total <= 100
         """
 
-        return raw_sql.exec_sql(sql, [datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')]) 
+        return raw_sql.exec_sql(sql, [datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
 
 
 class UserToChannelBase(object):
@@ -471,13 +472,14 @@ class UserToChannelBase(object):
     '''
     获取用户可看渠道商
     '''
+
     def get_channels_of_user(self, user_id):
         from www.misc.account import ACCOUNTS
 
         channels = []
 
         for per in UserToChannel.objects.filter(user_id=user_id):
-            channels.append([x for x in ACCOUNTS if x['CHANNEL_ID']==per.channel_id][0])
+            channels.append([x for x in ACCOUNTS if x['CHANNEL_ID'] == per.channel_id][0])
 
         return channels
 
@@ -489,25 +491,14 @@ class UserToChannelBase(object):
         # 添加用户
         from www.account import interface
         flag, profile = interface.UserBase().regist_user(
-            email = email, 
-            nick = nick, 
-            password = password, 
-            re_password = password, 
-            ip = '127.0.0.1', 
-            mobilenumber = tel
+            email=email,
+            nick=nick,
+            password=password,
+            re_password=password,
+            ip='127.0.0.1',
+            mobilenumber=tel
         )
 
         # 给用户分配可以查看的渠道
         UserToChannel.objects.create(user_id=profile.id, channel_id=channel_id)
         UserToChannel.objects.create(user_id='e27713a30ae311e79a37a45e60bb9305', channel_id=channel_id)
-
-
-
-
-
-
-
-
-
-
-

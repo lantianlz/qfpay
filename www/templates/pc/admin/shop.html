@@ -27,11 +27,9 @@
     text-align: right;
     height: 25px; 
     line-height: 25px;
-    width: 0;
     cursor: pointer;
     padding-right: 10px;
     padding-left: 10px;
-    transition: all 0.5s ease-out;
 }
 .info-container{
     position: absolute;
@@ -112,7 +110,7 @@ $(document).ready(function(){
                                 '<span class="num"><%= num+1 %></span>',
                                 '<a class="pl-30 shop-name" href="/admin/per_shop/<%= record.shop_id %>/?start_date=<%= $("#start_date_search").val() %>&end_date=<%= $("#end_date_search").val() %>" target="_blank" title="[ <%= record.pass_date %> ] <%= record.name %>" data-toggle="tooltip" data-placement="top"><%= record.name %>( <%= record.owner %> )</a>',
                             '</div>',
-                            '<div class="col-md-12 score" data-toggle="tooltip" data-placement="top" title="总交易 <%= record.count %> 笔，总金额 <%= record.total %> 元，平均每笔 <%= record.average %> 元"  data-rate="<%= record.rate>=9?record.rate:9 %>%">',
+                            '<div class="col-md-12 score" data-toggle="tooltip" data-placement="top" title="总交易 <%= record.count %> 笔，总金额 <%= record.total %> 元，平均每笔 <%= record.average %> 元" style="width: <%= record.rate>=9?record.rate:9 %>%">',
                                 '<span class="amount"><%= record.total %></span>',
                             '</div>',
                         '</div>',
@@ -121,13 +119,6 @@ $(document).ready(function(){
                 ].join(''));
                 $('.scores').html(sortTemplate({'records': data.data}));
                 $('[data-toggle="tooltip"]').tooltip();
-
-                window.setTimeout(function(){
-                    $.map($('.score'), function(per){
-                        $(per).css('width', $(per).data('rate'));
-                    });
-                }, 1);
-
             }
         )
 

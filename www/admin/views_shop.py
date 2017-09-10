@@ -14,6 +14,7 @@ from misc.decorators import staff_required, common_ajax_response, verify_permiss
 
 from www.admin.interface import ShopBase, UserToChannelBase
 
+
 def order_list(request, template_name='pc/admin/order_list.html'):
 
     shop_id = request.REQUEST.get('shop_id')
@@ -34,6 +35,7 @@ def order_list(request, template_name='pc/admin/order_list.html'):
     order_count = len(orders)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 def choose_channel(request, template_name='pc/admin/choose_channel.html'):
     '''
@@ -44,10 +46,11 @@ def choose_channel(request, template_name='pc/admin/choose_channel.html'):
     channel_id = request.GET.get('channel')
     if channel_id:
         request.session['CHANNEL_ID'] = channel_id
-        request.session['CHANNEL_NAME'] = [x for x in channels if x['CHANNEL_ID']==int(channel_id)][0]['USERNAME']
+        request.session['CHANNEL_NAME'] = [x for x in channels if x['CHANNEL_ID'] == int(channel_id)][0]['USERNAME']
         return HttpResponseRedirect('/admin/shop')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @channel_required
@@ -60,6 +63,7 @@ def shop(request, template_name='pc/admin/shop.html'):
     end_date = today.strftime('%Y-%m-%d')
     salesman = request.REQUEST.get('salesman', '')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @channel_required
@@ -74,8 +78,9 @@ def per_shop(request, shop_id, template_name='pc/admin/per_shop.html'):
     start_date = start_date or today.replace(day=1).strftime('%Y-%m-%d')
     end_date = request.GET.get('end_date')
     end_date = end_date or today.strftime('%Y-%m-%d')
-    
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @channel_required
@@ -87,6 +92,7 @@ def salesman(request, template_name='pc/admin/salesman.html'):
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @channel_required
@@ -101,6 +107,7 @@ def inactive_shops(request, template_name='pc/admin/inactive_shops.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 @channel_required
 def timesharing(request, template_name="pc/admin/timesharing.html"):
@@ -112,8 +119,9 @@ def timesharing(request, template_name="pc/admin/timesharing.html"):
     salesman = request.GET.get('salesman')
     if shop_id:
         shop = ShopBase(request.session['CHANNEL_ID']).get_shop_by_id(shop_id)
-        
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @channel_required
@@ -126,6 +134,7 @@ def encouragement(request, template_name="pc/admin/encouragement.html"):
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 @channel_required
 def performance(request, template_name="pc/admin/performance.html"):
@@ -133,9 +142,8 @@ def performance(request, template_name="pc/admin/performance.html"):
     业务员考核统计
     '''
     date = datetime.datetime.now().strftime('%Y-%m')
-    
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
 def _get_shop_info(channel_id):
@@ -145,13 +153,14 @@ def _get_shop_info(channel_id):
     dict_shop_info = {}
     for x in shop_base.get_all_shop().values('shop_id', 'owner', 'name', 'tel', 'pass_date'):
         dict_shop_info[x['shop_id']] = {
-            'owner': x['owner'], 
-            'name': x['name'], 
+            'owner': x['owner'],
+            'name': x['name'],
             'tel': x['tel'],
             'pass_date': str(x['pass_date'])[:10]
         }
 
     return dict_shop_info
+
 
 def get_shop_sort(request):
     shop_base = ShopBase(request.session['CHANNEL_ID'])
@@ -169,7 +178,7 @@ def get_shop_sort(request):
     pass_date_sort = request.REQUEST.get('pass_date_sort')
     pass_date_sort = False if pass_date_sort == 'false' else True
     # 销售员
-    salesman = request.REQUEST.get('salesman', '')
+    salesman = request.REQUEST.get('salesman')
 
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
@@ -178,37 +187,47 @@ def get_shop_sort(request):
     # 商户信息字典
     dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
 
-    result = shop_base.get_shop_sort(start_date, end_date, pass_date_sort, salesman)
-    max_total = decimal.Decimal(result[0][3]) if len(result) > 0 else 0
-    max_total = max([x[3] for x in result]) if len(result) > 0 else 0
+    result = shop_base.get_shop_sort(start_date, end_date)
+    # max_total = decimal.Decimal(result[0][2]) if len(result) > 0 else 0
+    max_total = max([x[2] for x in result]) if len(result) > 0 else 0
+    max_total = float(max_total)
 
     for x in result:
 
-        total = decimal.Decimal(x[3])
+        shop_id = x[0]
+        order_count = x[1]
+        total = float(x[2])
+        owner = dict_shop_info[shop_id]['owner']
 
         # 统计店铺总数
         all_shop_count += 1
         # 统计总订单数
-        all_order_count += x[2]
+        all_order_count += order_count
         # 统计总交易额
         all_order_price += total
 
         # 交易金额大于50才算是有效商户
         if total >= 50:
             active_shop_count += 1
-        
-        data.append({
-            'shop_id': x[0],
-            'name': x[1],
-            'count': x[2],
-            'total': str(x[3]),
-            'average': round(x[3] / x[2], 2),
-            'rate': round(total / max_total * 100, 1) if max_total != 0 else 0,
-            'owner': dict_shop_info[x[0]]['owner'],
-            'pass_date': str(x[4])[:10]
-        })
-        active_shops.append(x[0])
 
+        # 按销售人员过滤
+        if salesman:
+            if salesman != owner:
+                continue
+
+        data.append({
+            'shop_id': shop_id,
+            'name': dict_shop_info[shop_id]['name'],
+            'count': order_count,
+            'total': total,
+            'average': round(total / order_count, 2),
+            'rate': round(total / max_total * 100, 1) if max_total != 0 else 0,
+            'owner': owner,
+            'pass_date': dict_shop_info[shop_id]['pass_date']
+        })
+        active_shops.append(shop_id)
+
+    # 将上面未统计的店铺也添加进来
     for x in shop_base.get_shops(salesman):
         if x.shop_id not in active_shops:
             data.append({
@@ -219,11 +238,17 @@ def get_shop_sort(request):
                 'average': 0,
                 'rate': 0,
                 'owner': dict_shop_info[x.shop_id]['owner'],
-                'pass_date': str(x.pass_date)[:10]
+                'pass_date': dict_shop_info[shop_id]['pass_date']
             })
 
     average_order_count = (all_order_count / active_shop_count) if active_shop_count != 0 else 0
     average_order_price = (all_order_price / active_shop_count) if active_shop_count != 0 else 0
+
+    # 排序
+    if pass_date_sort:
+        data = sorted(data, key=lambda x: x['pass_date'], reverse=True)
+    else:
+        data = sorted(data, key=lambda x: x['total'], reverse=True)
 
     return HttpResponse(
         json.dumps({
@@ -279,13 +304,13 @@ def get_order_statistic_data(request):
 
     return HttpResponse(
         json.dumps({
-            'x_count_data': x_count_data, 
+            'x_count_data': x_count_data,
             'y_count_data': y_count_data,
-            'all_order_count': all_order_count, 
+            'all_order_count': all_order_count,
             'average_order_count': average_order_count,
             'x_price_data': x_price_data,
             'y_price_data': y_price_data,
-            'all_order_price': str(all_order_price), 
+            'all_order_price': str(all_order_price),
             'average_order_price': str(average_order_price)
         }),
         mimetype='application/json'
@@ -309,12 +334,11 @@ def get_order_list(request):
     # 商户信息字典
     # dict_shop_info = _get_shop_info(request.session['CHANNEL_ID'])
 
-    objs = shop_base.get_order_list(start_date, end_date, price_sort, shop_id, salesman)
-
-    page_objs = page.Cpt(objs, count=15, page=page_index).info
+    objs, total_count = shop_base.get_order_list(start_date, end_date, price_sort, shop_id, salesman, page_index)
+    page_count = (total_count / 15) if (total_count % 15 == 0) else (total_count / 15 + 1)
 
     num = 15 * (page_index - 1)
-    for x in page_objs[0]:
+    for x in objs:
         num += 1
 
         data.append({
@@ -328,9 +352,8 @@ def get_order_list(request):
             'state': x[6]
         })
 
-
     return HttpResponse(
-        json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({'data': data, 'page_count': page_count, 'total_count': total_count}),
         mimetype='application/json'
     )
 
@@ -345,7 +368,7 @@ def _get_percentage(total, percentage):
         return float(percentage)
 
     if total <= 1000000:
-        percentage = 0.3 
+        percentage = 0.3
 
     if 1000000 < total and total <= 3000000:
         percentage = 0.4
@@ -354,6 +377,7 @@ def _get_percentage(total, percentage):
         percentage = 0.5
 
     return float(percentage)
+
 
 def get_salesman_statistics_data(request):
     '''
@@ -373,7 +397,7 @@ def get_salesman_statistics_data(request):
     for x in shop_base.get_shop_count_group_by_salesman():
         if not dict_salesman_2_shop_count.has_key(x[1]):
             dict_salesman_2_shop_count[x[1]] = x[0]
-    
+
     # 商户金额字典
     dict_shop_2_total = {}
     # 商户收益字典
@@ -394,7 +418,7 @@ def get_salesman_statistics_data(request):
         dict_salesman_2_shop[x.owner][0] += dict_shop_2_total.get(x.shop_id, 0)
         # 收益
         dict_salesman_2_shop[x.owner][1] += dict_shop_2_rate.get(x.shop_id, 0)
-    
+
     # 业务员与提成比例对照
     dict_salesman_2_percentage = {}
     for x in shop_base.get_all_salesman():
@@ -406,7 +430,7 @@ def get_salesman_statistics_data(request):
     latest_order_date = latest_order_date.strftime('%Y-%m-%d %H:%M:%S')
     dict_salesman_2_lost_shop = {}
     for x in shop_base.get_lost_shop_group_by_salesman(
-        '2015-01-01 00:00:00', 
+        '2015-01-01 00:00:00',
         today.strftime('%Y-%m-%d %H:%M:%S'),
         latest_order_date
     ):
@@ -427,7 +451,7 @@ def get_salesman_statistics_data(request):
         # 提成比例
         _percentage = _get_percentage(_total, dict_salesman_2_percentage.get(k, None)) if k != u'渠道录入' else 0
         # 税后利润
-        _profit_after_tax = _profit/1.03
+        _profit_after_tax = _profit / 1.03
 
         if _total <= 0:
             continue
@@ -463,7 +487,6 @@ def get_salesman_statistics_data(request):
     )
 
 
-
 def get_timesharing_statistics_data(request):
 
     date = request.REQUEST.get('date')
@@ -496,6 +519,7 @@ def get_timesharing_statistics_data(request):
         }),
         mimetype='application/json'
     )
+
 
 def get_timesharing_detail_data(request):
     shop_base = ShopBase(request.session['CHANNEL_ID'])
@@ -534,6 +558,8 @@ def _get_encouragement(per_count):
         return 120
     else:
         return 0
+
+
 def get_encouragement_data(request):
     '''
     统计激励金 按钱方规则
@@ -626,8 +652,8 @@ def get_encouragement_data_2(request):
             continue
         # 获取该店通过日期之后 30 天内交易数据
         for y in shop_base.get_encouragement_detail_group_by_pay_type_of_shop(
-            (x.pass_date).strftime('%Y-%m-%d'), 
-            (x.pass_date + datetime.timedelta(days=30)).strftime('%Y-%m-%d'), 
+            (x.pass_date).strftime('%Y-%m-%d'),
+            (x.pass_date + datetime.timedelta(days=30)).strftime('%Y-%m-%d'),
             x.shop_id
         ):
             key = x.shop_id
@@ -680,7 +706,6 @@ def get_encouragement_data_2(request):
     )
 
 
-
 def get_performance_data(request):
     '''
     业务员考核统计
@@ -709,7 +734,7 @@ def get_performance_data(request):
     last_month = start_date[:7]
 
     dict_salesman_2_shop_of_month = {}
-    for x in shop_base.get_shop_count_group_by_salesman_and_month(start_date, end_date+' 23:59:59'):
+    for x in shop_base.get_shop_count_group_by_salesman_and_month(start_date, end_date + ' 23:59:59'):
         if not dict_salesman_2_shop_of_month.has_key(x[1]):
             dict_salesman_2_shop_of_month[x[1]] = {this_month: 0, last_month: 0}
         dict_salesman_2_shop_of_month[x[1]][x[2]] += x[0]
@@ -743,7 +768,7 @@ def get_performance_data(request):
             continue
 
         data.append({
-            'name': k, 
+            'name': k,
             'this_month_count': dict_salesman_2_shop_of_month[k][this_month] if dict_salesman_2_shop_of_month.has_key(k) else 0,
             'last_month_count': dict_salesman_2_shop_of_month[k][last_month] if dict_salesman_2_shop_of_month.has_key(k) else 0,
             'all_count': dict_salesman_2_shop_count.get(k, 0),
@@ -762,7 +787,7 @@ def get_performance_data(request):
         all_new += x['this_month_count']
         all_lost += x['lost_count']
 
-    all_lost_rate = float(all_lost)/all_new*100 if all_new else 0
+    all_lost_rate = float(all_lost) / all_new * 100 if all_new else 0
 
     return HttpResponse(
         json.dumps({
@@ -815,21 +840,3 @@ def get_new_shop_of_current_month(request):
         }),
         mimetype='application/json'
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
